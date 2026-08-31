@@ -1,4 +1,4 @@
 # Admin Credentials
 
 - **Email / Username**: abdurrahmandottopofficial@gmail.com
-- **Password**: [To be added securely]
+- **Password**: TechilyFly@2026!Admin
