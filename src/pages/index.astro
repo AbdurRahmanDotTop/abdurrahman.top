@@ -1,152 +1,36 @@
 ---
 export const prerender = false;
 import Layout from '../layouts/Layout.astro';
-import { getDb } from '../db';
-import { sections } from '../db/schema';
-
-// We fetch data from DB if available, otherwise use fallbacks
-import { env } from "cloudflare:workers";
-const db = getDb(env.DB);
-const allSections = await db.select().from(sections);
-const sectionMap = Object.fromEntries(allSections.map(s => [s.sectionId, s]));
-
-function getSectionData(id: string) {
-  try {
-    return sectionMap[id]?.isActive ? JSON.parse(sectionMap[id].content || '{}') : null;
-  } catch {
-    return null;
-  }
-}
-
-const heroData = getSectionData('hero') || {
-  heading: "Salaam, I'm",
-  name: "AbdurRahman Md Ghufran",
-  roles: "Generative AI Engineer • Full-Stack Developer • Digital Creator",
-  description: "Building intelligent solutions with Python, Kotlin, PHP & modern web & app technologies. Passionate about AI, business intelligence, and creating impactful digital experiences.",
-  stats: [
-    { number: "5", label: "Years Experience" },
-    { number: "20", label: "Projects Completed" },
-    { number: "5", label: "Happy Clients" }
-  ]
-};
-
-const aboutData = getSectionData('about') || {
-  title: "Transforming Ideas into Digital Reality",
-  paragraphs: [
-    "I'm a multi-disciplinary technologist specializing in Generative AI, full-stack web & app development, and digital marketing. With expertise in Python, PHP, MySQL, Kotlin, and modern JavaScript frameworks, I build scalable solutions that drive business growth.",
-    "Currently leading development of Techily Fly - a comprehensive LMS/Institute management platform with multi-role authentication, payment integration, and certificate generation."
-  ]
-};
-
-const experienceData = getSectionData('experience') || [
-  { year: "2020 - Present", title: "Lead Developer & AI Engineer", company: "Techily Fly • Remote", desc: "Leading development of intelligent web and mobile platforms." },
-  { year: "2020 - 2023", title: "Digital Marketer", company: "Idea Rise Technologies", desc: "Managed digital campaigns for brands worldwide." }
-];
+import Hero from '../components/Hero.astro';
+import About from '../components/About.astro';
+import Services from '../components/Services.astro';
+import Skills from '../components/Skills.astro';
+import Timeline from '../components/Timeline.astro';
 ---
 
 <Layout title="AbdurRahman - AI Engineer & Full-Stack Developer">
-  <!-- Hero Section -->
-  <section id="home" class="min-h-[90vh] flex items-center relative overflow-hidden">
-    <div class="absolute inset-0 bg-gradient-to-br from-cloud-surface to-gray-100/50 -z-10"></div>
-    <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center py-20">
-      <div>
-        <span class="inline-block px-4 py-1.5 rounded-full bg-signal-coral/10 text-signal-coral font-semibold text-sm mb-6">
-          👋 Welcome to My Digital World!
-        </span>
-        <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight mb-4">
-          {heroData.heading} <br/>
-          <span class="text-transparent bg-clip-text bg-gradient-to-r from-tf-graphite to-signal-coral">{heroData.name}</span>
-        </h1>
-        <h2 class="text-xl md:text-2xl font-medium text-gray-600 mb-6 font-mono">
-          {heroData.roles}
-        </h2>
-        <p class="text-gray-600 text-lg mb-8 max-w-xl leading-relaxed">
-          {heroData.description}
-        </p>
-        
-        <div class="flex flex-wrap gap-4 mb-8">
-          {heroData.stats.map((stat: any) => (
-            <div class="bg-white/60 backdrop-blur-md px-6 py-4 rounded-2xl border border-gray-100 shadow-sm flex-1 min-w-[120px]">
-              <div class="text-3xl font-bold text-tf-graphite mb-1">{stat.number}+</div>
-              <div class="text-sm font-medium text-gray-500">{stat.label}</div>
-            </div>
-          ))}
-        </div>
+  
+  <Hero />
+  <About />
+  <Services />
+  <Skills />
+  <Timeline />
 
-        <div class="flex flex-wrap gap-4">
-          <a href="#projects" class="px-8 py-3.5 bg-tf-graphite text-white font-semibold rounded-full hover:bg-black transition-all shadow-lg hover:shadow-xl hover:-translate-y-1">
-            View Projects
-          </a>
-          <a href="#contact" class="px-8 py-3.5 bg-white text-tf-graphite font-semibold rounded-full border border-gray-200 hover:border-signal-coral hover:text-signal-coral transition-all shadow-sm">
-            Get In Touch
-          </a>
-        </div>
+  <!-- Contact Section -->
+  <section id="contact" class="py-24 bg-white">
+    <div class="max-w-3xl mx-auto px-6 text-center">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-signal-coral/10 text-signal-coral text-sm font-bold tracking-wider uppercase mb-6">
+        Get In Touch
       </div>
+      <h2 class="text-4xl font-bold text-tf-graphite mb-6">Let's Build Something Great Together</h2>
+      <p class="text-xl text-gray-500 mb-12">
+        Whether you have a question, a project in mind, or just want to say hi, I'll try my best to get back to you!
+      </p>
       
-      <div class="relative hidden lg:block">
-        <div class="absolute inset-0 bg-gradient-to-tr from-signal-coral/20 to-transparent rounded-full blur-3xl"></div>
-        <img src="https://yt3.googleusercontent.com/fIJ3r6a8JcUGXA7uEIvGopioT1m5VqF_srMy8_xgTAhkeHH4h7qw6yfjHqXfvNf7vsOSeVCy97E=s900-c-k-c0x00ffffff-no-rj" alt="Profile" class="relative z-10 w-full max-w-md mx-auto rounded-[2rem] shadow-2xl object-cover aspect-square" />
-      </div>
-    </div>
-  </section>
-
-  <!-- About Section -->
-  <section id="about" class="py-24 bg-white">
-    <div class="max-w-7xl mx-auto px-6">
-      <div class="text-center mb-16">
-        <span class="text-signal-coral font-bold tracking-wider uppercase text-sm">About Me</span>
-        <h2 class="text-4xl font-bold mt-2">Who I Am</h2>
-      </div>
-      
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-        <div class="rounded-[2rem] overflow-hidden shadow-xl">
-          <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600&h=700&fit=crop" alt="Code" class="w-full h-full object-cover" />
-        </div>
-        <div>
-          <h3 class="text-3xl font-bold mb-6">{aboutData.title}</h3>
-          <div class="space-y-4 text-gray-600 text-lg leading-relaxed mb-8">
-            {aboutData.paragraphs.map((p: string) => (
-              <p>{p}</p>
-            ))}
-          </div>
-          <div class="bg-cloud-surface p-6 rounded-2xl border border-gray-100 space-y-4">
-            <div class="flex items-center gap-4">
-              <div class="w-10 h-10 rounded-full bg-signal-coral/10 flex items-center justify-center text-signal-coral font-bold">📍</div>
-              <span class="font-medium">East Champaran, Bihar, India - 845427</span>
-            </div>
-            <div class="flex items-center gap-4">
-              <div class="w-10 h-10 rounded-full bg-signal-coral/10 flex items-center justify-center text-signal-coral font-bold">✉️</div>
-              <a href="mailto:Contact@AbdurRahman.Top" class="font-medium hover:text-signal-coral transition-colors">Contact@AbdurRahman.Top</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Experience & Education (Timeline) -->
-  <section id="experience" class="py-24 bg-cloud-surface">
-    <div class="max-w-7xl mx-auto px-6">
-      <div class="text-center mb-16">
-        <span class="text-signal-coral font-bold tracking-wider uppercase text-sm">My Journey</span>
-        <h2 class="text-4xl font-bold mt-2">Work Experience</h2>
-      </div>
-
-      <div class="max-w-3xl mx-auto space-y-8">
-        {experienceData.map((exp: any) => (
-          <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 flex flex-col md:flex-row gap-6 relative overflow-hidden group">
-            <div class="w-1 bg-signal-coral absolute left-0 top-0 bottom-0 scale-y-0 group-hover:scale-y-100 transition-transform origin-top"></div>
-            <div class="md:w-1/4 shrink-0 text-signal-coral font-mono font-bold">
-              {exp.year}
-            </div>
-            <div>
-              <h3 class="text-xl font-bold">{exp.title}</h3>
-              <div class="text-gray-500 font-medium mb-3">{exp.company}</div>
-              <p class="text-gray-600">{exp.desc}</p>
-            </div>
-          </div>
-        ))}
-      </div>
+      <a href="mailto:Contact@AbdurRahman.Top" class="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-signal-coral rounded-xl hover:bg-[#E66A4F] hover:shadow-xl hover:shadow-signal-coral/20 transition-all hover:-translate-y-1">
+        Say Hello
+        <svg class="w-5 h-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+      </a>
     </div>
   </section>
 

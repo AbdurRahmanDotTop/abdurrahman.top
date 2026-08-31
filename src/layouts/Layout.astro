@@ -35,7 +35,7 @@ const {
     <meta property="twitter:image" content={image} />
 
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" href="/logo.png" />
   </head>
   <body class="bg-cloud-surface text-tf-graphite font-sans antialiased selection:bg-signal-coral selection:text-white">
     <!-- Skip to content link for accessibility -->
@@ -46,14 +46,14 @@ const {
     <!-- Navbar -->
     <header class="fixed top-0 w-full z-40 bg-cloud-surface/80 backdrop-blur-md border-b border-gray-200">
       <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-        <a href="/" class="text-2xl font-bold tracking-tighter">
-          Abdur<span class="text-signal-coral">Rahman</span>
+        <a href="/" class="flex items-center gap-2">
+          <img src="/logo.png" alt="AbdurRahman Logo" class="h-10 md:h-12 w-auto object-contain" />
         </a>
         <nav class="hidden md:flex gap-8">
           <a href="/#about" class="text-sm font-medium hover:text-signal-coral transition-colors">About</a>
           <a href="/#services" class="text-sm font-medium hover:text-signal-coral transition-colors">Services</a>
-          <a href="/#projects" class="text-sm font-medium hover:text-signal-coral transition-colors">Projects</a>
-          <a href="/blog" class="text-sm font-medium hover:text-signal-coral transition-colors">Blog</a>
+          <a href="/#experience" class="text-sm font-medium hover:text-signal-coral transition-colors">Experience</a>
+          <a href="/#skills" class="text-sm font-medium hover:text-signal-coral transition-colors">Skills</a>
           <a href="/#contact" class="text-sm font-medium hover:text-signal-coral transition-colors">Contact</a>
         </nav>
         <a href="/#contact" class="hidden md:inline-flex px-5 py-2.5 bg-tf-graphite text-white text-sm font-medium rounded-full hover:bg-black transition-all">
@@ -70,8 +70,10 @@ const {
     <footer class="bg-tf-graphite text-white py-12 mt-20">
       <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8">
         <div class="col-span-1 md:col-span-2">
-          <h3 class="text-xl font-bold mb-4">Techily Fly</h3>
-          <p class="text-gray-400 max-w-sm">Building scalable, lightning-fast digital experiences with modern web technologies.</p>
+          <a href="/" class="inline-block mb-4">
+            <img src="/logo.png" alt="AbdurRahman Logo" class="h-12 w-auto object-contain" />
+          </a>
+          <p class="text-gray-400 max-w-sm">Generative AI Engineer, Full-Stack Developer & Digital Creator building scalable, intelligent solutions.</p>
         </div>
         <div>
           <h4 class="font-bold mb-4 text-signal-coral">Important Links</h4>
