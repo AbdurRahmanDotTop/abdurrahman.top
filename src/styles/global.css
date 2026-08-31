@@ -1,0 +1,16 @@
+@import "@fontsource-variable/manrope";
+@import "@fontsource/geist-mono";
+@import "tailwindcss";
+
+@theme {
+  --color-tf-graphite: #212121;
+  --color-signal-coral: #FF7759;
+  --color-cloud-surface: #FAFAFA;
+
+  --font-sans: "Manrope Variable", sans-serif;
+  --font-mono: "Geist Mono", monospace;
+}
+
+body {
+  @apply bg-cloud-surface text-tf-graphite font-sans antialiased;
+}

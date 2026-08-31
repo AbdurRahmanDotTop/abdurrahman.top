@@ -1,0 +1,60 @@
+---
+export const prerender = false;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Admin Dashboard - Techily Fly</title>
+    <link href="/src/styles/global.css" rel="stylesheet" />
+  </head>
+  <body class="bg-cloud-surface text-tf-graphite min-h-screen font-sans flex">
+    
+    <!-- Sidebar -->
+    <aside class="w-64 bg-tf-graphite text-white min-h-screen flex flex-col">
+      <div class="p-6">
+        <h2 class="text-2xl font-bold text-signal-coral">Techily Fly</h2>
+        <p class="text-sm text-gray-400 mt-1">Admin Panel</p>
+      </div>
+      <nav class="flex-1 px-4 space-y-2">
+        <a href="/admin" class="block px-4 py-3 bg-white/10 rounded-lg font-medium transition-colors">Dashboard</a>
+        <a href="/admin/sections" class="block px-4 py-3 hover:bg-white/5 rounded-lg font-medium transition-colors">Sections & Pages</a>
+        <a href="/admin/blog" class="block px-4 py-3 hover:bg-white/5 rounded-lg font-medium transition-colors">Blog & Articles</a>
+        <a href="/admin/settings" class="block px-4 py-3 hover:bg-white/5 rounded-lg font-medium transition-colors">Global Settings</a>
+      </nav>
+      <div class="p-4">
+        <a href="/admin/logout" class="block px-4 py-3 text-red-400 hover:bg-red-400/10 rounded-lg font-medium transition-colors text-center">Logout</a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-8">
+      <header class="mb-8">
+        <h1 class="text-3xl font-bold">Dashboard Overview</h1>
+        <p class="text-gray-500 mt-2">Welcome back. Manage your portfolio and blog content from here.</p>
+      </header>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+          <h3 class="text-lg font-bold mb-2">Sections</h3>
+          <p class="text-gray-500 text-sm mb-4">Edit Hero, About, Services, and other sections.</p>
+          <a href="/admin/sections" class="text-signal-coral font-medium hover:underline">Manage Sections →</a>
+        </div>
+        
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+          <h3 class="text-lg font-bold mb-2">Blog Posts</h3>
+          <p class="text-gray-500 text-sm mb-4">Write, edit, and publish new articles.</p>
+          <a href="/admin/blog" class="text-signal-coral font-medium hover:underline">Manage Blog →</a>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+          <h3 class="text-lg font-bold mb-2">Settings</h3>
+          <p class="text-gray-500 text-sm mb-4">Update SEO metadata, social links, and configuration.</p>
+          <a href="/admin/settings" class="text-signal-coral font-medium hover:underline">Manage Settings →</a>
+        </div>
+      </div>
+    </main>
+
+  </body>
+</html>

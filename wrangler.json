@@ -1,0 +1,26 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "portfolio",
+  "compatibility_date": "2024-09-23",
+  "kv_namespaces": [
+    {
+      "binding": "SESSION",
+      "id": "0dc6c92f8218485bbc19e02ddf13ffd2"
+    }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "techily-fly-db",
+      "database_id": "d0dda1d3-cca7-4c98-a169-6fbb20340973"
+    }
+  ],
+  "assets": {
+    "binding": "ASSETS",
+    "directory": "./dist/client"
+  },
+  "routes": [
+    "abdurrahman.top/*",
+    "www.abdurrahman.top/*"
+  ]
+}

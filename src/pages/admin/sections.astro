@@ -1,0 +1,111 @@
+---
+export const prerender = false;
+
+import { eq } from 'drizzle-orm';
+import { getDb } from '../../db';
+import { sections } from '../../db/schema';
+
+import { env } from "cloudflare:workers";
+const db = getDb(env.DB);
+
+// Pre-fill some default sections if empty
+const allSections = await db.select().from(sections).orderBy(sections.order);
+if (allSections.length === 0) {
+  const defaults = [
+    { id: crypto.randomUUID(), sectionId: 'hero', title: 'Hero Section', content: '{"heading":"I am AbdurRahman", "subheading":"Developer"}' },
+    { id: crypto.randomUUID(), sectionId: 'about', title: 'About Me', content: '{"text":"Passionate developer..."}' },
+    { id: crypto.randomUUID(), sectionId: 'experience', title: 'Experience', content: '[]' },
+    { id: crypto.randomUUID(), sectionId: 'projects', title: 'Projects', content: '[]' },
+  ];
+  await db.insert(sections).values(defaults);
+  allSections.push(...defaults.map(d => ({ ...d, order: 0, isActive: true })));
+}
+
+let message = '';
+if (Astro.request.method === 'POST') {
+  try {
+    const data = await Astro.request.formData();
+    const sectionId = data.get('id') as string;
+    const title = data.get('title') as string;
+    const content = data.get('content') as string;
+    const isActive = data.get('isActive') === 'on';
+
+    if (sectionId) {
+      await db.update(sections)
+        .set({ title, content, isActive })
+        .where(eq(sections.id, sectionId));
+      message = 'Section updated successfully.';
+    }
+    // reload data
+    return Astro.redirect('/admin/sections');
+  } catch (e: any) {
+    message = e.message || 'Error updating section.';
+  }
+}
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Manage Sections - Techily Fly</title>
+    <link href="/src/styles/global.css" rel="stylesheet" />
+  </head>
+  <body class="bg-cloud-surface text-tf-graphite min-h-screen font-sans flex">
+    
+    <aside class="w-64 bg-tf-graphite text-white min-h-screen flex flex-col">
+      <div class="p-6">
+        <h2 class="text-2xl font-bold text-signal-coral">Techily Fly</h2>
+      </div>
+      <nav class="flex-1 px-4 space-y-2">
+        <a href="/admin" class="block px-4 py-3 hover:bg-white/5 rounded-lg font-medium transition-colors">Dashboard</a>
+        <a href="/admin/sections" class="block px-4 py-3 bg-white/10 rounded-lg font-medium transition-colors">Sections & Pages</a>
+        <a href="/admin/blog" class="block px-4 py-3 hover:bg-white/5 rounded-lg font-medium transition-colors">Blog & Articles</a>
+        <a href="/admin/settings" class="block px-4 py-3 hover:bg-white/5 rounded-lg font-medium transition-colors">Global Settings</a>
+      </nav>
+      <div class="p-4">
+        <a href="/admin/logout" class="block px-4 py-3 text-red-400 hover:bg-red-400/10 rounded-lg font-medium transition-colors text-center">Logout</a>
+      </div>
+    </aside>
+
+    <main class="flex-1 p-8">
+      <header class="mb-8 flex justify-between items-center">
+        <div>
+          <h1 class="text-3xl font-bold">Manage Sections</h1>
+          <p class="text-gray-500 mt-2">Update the content of your portfolio sections.</p>
+        </div>
+      </header>
+
+      {message && <div class="mb-6 p-4 bg-green-50 text-green-700 rounded-lg">{message}</div>}
+
+      <div class="space-y-8">
+        {allSections.map((sec) => (
+          <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <h3 class="text-xl font-bold mb-4 capitalize">{sec.title}</h3>
+            <form method="POST" class="space-y-4">
+              <input type="hidden" name="id" value={sec.id} />
+              
+              <div>
+                <label class="block text-sm font-semibold mb-2">Section Title</label>
+                <input type="text" name="title" value={sec.title} class="w-full px-4 py-2 border rounded-lg" />
+              </div>
+
+              <div>
+                <label class="block text-sm font-semibold mb-2">Content (JSON/Markdown depending on section)</label>
+                <textarea name="content" rows="4" class="w-full px-4 py-2 border rounded-lg font-mono text-sm">{sec.content}</textarea>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <input type="checkbox" name="isActive" id={`active-${sec.id}`} checked={sec.isActive ?? false} />
+                <label for={`active-${sec.id}`} class="text-sm font-medium">Is Active (Visible on site)</label>
+              </div>
+
+              <button type="submit" class="px-4 py-2 bg-tf-graphite text-white rounded-lg hover:bg-black transition-colors">
+                Save {sec.title}
+              </button>
+            </form>
+          </div>
+        ))}
+      </div>
+    </main>
+  </body>
+</html>
