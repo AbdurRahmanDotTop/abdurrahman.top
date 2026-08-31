@@ -1,0 +1,105 @@
+---
+// Custom Cursor Component for Desktop
+---
+
+<div class="cursor-dot hidden lg:block"></div>
+<div class="cursor-outline hidden lg:block"></div>
+
+<style>
+  .cursor-dot,
+  .cursor-outline {
+      position: fixed;
+      top: 0;
+      left: 0;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      z-index: 9999;
+      pointer-events: none;
+  }
+  
+  .cursor-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--color-signal-coral);
+  }
+  
+  .cursor-outline {
+      width: 40px;
+      height: 40px;
+      border: 2px solid var(--color-signal-coral);
+      transition: width 0.2s ease-out, height 0.2s ease-out, background 0.2s ease-out, border-color 0.2s ease-out;
+  }
+  
+  :global(body.hovering) .cursor-outline {
+      width: 60px;
+      height: 60px;
+      background: rgba(255, 119, 89, 0.1); /* signal-coral with opacity */
+      border-color: transparent;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+      // Only enable on desktop (width >= 1024px) and non-touch devices
+      if (window.innerWidth >= 1024 && !('ontouchstart' in window || navigator.maxTouchPoints > 0)) {
+          const cursorDot = document.querySelector('.cursor-dot') as HTMLElement;
+          const cursorOutline = document.querySelector('.cursor-outline') as HTMLElement;
+          
+          if (!cursorDot || !cursorOutline) return;
+
+          // Hide cursor initially to avoid jump
+          cursorDot.style.opacity = '0';
+          cursorOutline.style.opacity = '0';
+          
+          // Show cursor after short delay
+          setTimeout(() => {
+              cursorDot.style.opacity = '1';
+              cursorOutline.style.opacity = '1';
+          }, 500);
+          
+          // Move cursor with mouse
+          window.addEventListener('mousemove', (e) => {
+              const posX = e.clientX;
+              const posY = e.clientY;
+              
+              // Dot follows instantly
+              cursorDot.style.left = `${posX}px`;
+              cursorDot.style.top = `${posY}px`;
+              
+              // Outline follows with slight delay for smooth effect
+              cursorOutline.animate({
+                  left: `${posX}px`,
+                  top: `${posY}px`
+              }, { duration: 100, fill: "forwards" });
+          });
+          
+          // Add hover effect to interactive elements
+          const addHoverEffect = () => {
+            const interactiveElements = document.querySelectorAll('a, button, input, textarea, select, [tabindex]:not([tabindex="-1"])');
+            
+            interactiveElements.forEach(el => {
+                // Ensure we don't attach multiple event listeners
+                if (!el.hasAttribute('data-cursor-hover')) {
+                    el.setAttribute('data-cursor-hover', 'true');
+                    el.addEventListener('mouseenter', () => {
+                        document.body.classList.add('hovering');
+                    });
+                    
+                    el.addEventListener('mouseleave', () => {
+                        document.body.classList.remove('hovering');
+                    });
+                }
+            });
+          };
+
+          addHoverEffect();
+
+          // Re-apply hover effect in case new interactive elements are added dynamically
+          const observer = new MutationObserver(() => {
+              addHoverEffect();
+          });
+          
+          observer.observe(document.body, { childList: true, subtree: true });
+      }
+  });
+</script>

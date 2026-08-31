@@ -1,6 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "portfolio",
+  "main": "./dist/server/entry.mjs",
   "compatibility_date": "2024-09-23",
   "kv_namespaces": [
     {
@@ -22,5 +23,6 @@
   "routes": [
     "abdurrahman.top/*",
     "www.abdurrahman.top/*"
-  ]
+  ],
+  "workers_dev": true
 }
