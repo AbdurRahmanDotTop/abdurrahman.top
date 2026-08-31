@@ -20,13 +20,13 @@
   .cursor-dot {
       width: 8px;
       height: 8px;
-      background: var(--color-signal-coral);
+      background: #F15A3B;
   }
   
   .cursor-outline {
       width: 40px;
       height: 40px;
-      border: 2px solid var(--color-signal-coral);
+      border: 2px solid #F15A3B;
       transition: width 0.2s ease-out, height 0.2s ease-out, background 0.2s ease-out, border-color 0.2s ease-out;
   }
   
@@ -39,7 +39,7 @@
 </style>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
+  const initCursor = () => {
       // Only enable on desktop (width >= 1024px) and non-touch devices
       if (window.innerWidth >= 1024 && !('ontouchstart' in window || navigator.maxTouchPoints > 0)) {
           const cursorDot = document.querySelector('.cursor-dot') as HTMLElement;
@@ -101,5 +101,11 @@
           
           observer.observe(document.body, { childList: true, subtree: true });
       }
-  });
+  };
+
+  // Run initialization
+  initCursor();
+  
+  // Re-run on view transitions if they are added later
+  document.addEventListener('astro:page-load', initCursor);
 </script>
