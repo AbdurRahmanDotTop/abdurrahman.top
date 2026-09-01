@@ -1,45 +1,45 @@
 ---
 const skills = [
   {
-    category: "Generative AI & Automation",
-    items: ["AI API Integration", "Prompt Engineering", "AI-Powered Applications", "Workflow Automation"]
+    category: "Generative AI",
+    items: ["AI API Integration", "Prompt Engineering", "AI-Powered Apps", "Workflow Automation"]
   },
   {
-    category: "Full Stack Development",
-    items: ["PHP / Laravel", "React / Next.js", "JavaScript / TypeScript", "Tailwind CSS"]
+    category: "Full Stack",
+    items: ["PHP / Laravel", "React / Next.js", "JavaScript / TS", "Tailwind CSS"]
   },
   {
-    category: "Mobile App Development",
-    items: ["Kotlin", "Android SDK", "REST API Integration", "App Deployment"]
+    category: "Mobile",
+    items: ["Kotlin", "Android SDK", "REST APIs", "App Deployment"]
   },
   {
-    category: "Database & Cloud",
-    items: ["MySQL", "D1 / Cloudflare", "Hostinger", "Git / GitHub"]
+    category: "Infrastructure",
+    items: ["MySQL", "D1 / Cloudflare", "Hostinger", "Git / CI/CD"]
   }
 ];
 ---
-<section id="skills" class="py-24 bg-white relative overflow-hidden">
+<section id="skills" class="py-32 bg-white relative overflow-hidden border-t border-gray-100">
   <div class="max-w-7xl mx-auto px-6">
-    <div class="text-center max-w-3xl mx-auto mb-16">
-      <h2 class="text-3xl md:text-4xl font-bold text-tf-graphite mb-4">Technical Expertise</h2>
-      <p class="text-gray-500 text-lg">A comprehensive look at the tools and technologies I use to build digital solutions.</p>
+    <div class="mb-16 md:mb-24 flex flex-col md:flex-row md:items-end justify-between gap-8">
+      <div class="max-w-2xl">
+        <h2 class="text-4xl md:text-5xl font-bold text-tf-graphite mb-6 tracking-tight">Technical Arsenal.</h2>
+        <p class="text-gray-500 text-lg md:text-xl font-medium leading-relaxed">The foundational technologies and frameworks I use to engineer robust digital products.</p>
+      </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
       {skills.map((skillGroup) => (
-        <div class="bg-cloud-surface border border-gray-100 rounded-2xl p-6 hover:shadow-lg transition-all hover:-translate-y-1">
-          <h3 class="text-lg font-bold text-tf-graphite mb-4 flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-signal-coral"></span>
+        <div class="space-y-6">
+          <h3 class="text-sm font-mono tracking-widest uppercase text-tf-graphite font-bold border-b border-gray-100 pb-4">
             {skillGroup.category}
           </h3>
-          <ul class="space-y-3">
+          <div class="flex flex-wrap gap-2">
             {skillGroup.items.map((item) => (
-              <li class="flex items-center gap-2 text-gray-600 text-sm">
-                <svg class="w-4 h-4 text-green-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+              <span class="px-4 py-2 bg-cloud-surface hover:bg-white border border-transparent hover:border-gray-200 text-gray-600 hover:text-tf-graphite rounded-full text-[13px] font-semibold transition-all cursor-default">
                 {item}
-              </li>
+              </span>
             ))}
-          </ul>
+          </div>
         </div>
       ))}
     </div>

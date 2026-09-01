@@ -45,56 +45,69 @@ const {
     </a>
 
     <!-- Navbar -->
-    <header class="fixed top-0 w-full z-40 bg-cloud-surface/80 backdrop-blur-md border-b border-gray-200">
-      <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-        <a href="/" class="flex items-center gap-2">
-          <img src="/logo-dark.png" alt="AbdurRahman Logo" class="h-10 md:h-12 w-auto object-contain" />
+    <div class="fixed top-6 inset-x-0 z-50 flex justify-center px-6 pointer-events-none">
+      <header class="pointer-events-auto bg-white/80 backdrop-blur-xl border border-gray-200/50 shadow-sm shadow-gray-200/20 rounded-full px-2 py-2 flex items-center justify-between gap-4 md:gap-8 transition-all animate-fade-in-up" style="animation-delay: 0.1s;">
+        <a href="/" class="flex items-center pl-3 pr-2 md:pr-0">
+          <img src="/logo-dark.png" alt="AbdurRahman Logo" class="h-7 md:h-8 w-auto object-contain" />
         </a>
-        <nav class="hidden md:flex gap-8">
-          <a href="/#about" class="text-sm font-medium hover:text-signal-coral transition-colors">About</a>
-          <a href="/#services" class="text-sm font-medium hover:text-signal-coral transition-colors">Services</a>
-          <a href="/#experience" class="text-sm font-medium hover:text-signal-coral transition-colors">Experience</a>
-          <a href="/#skills" class="text-sm font-medium hover:text-signal-coral transition-colors">Skills</a>
-          <a href="/#contact" class="text-sm font-medium hover:text-signal-coral transition-colors">Contact</a>
+        <nav class="hidden md:flex items-center gap-1 bg-gray-50/50 rounded-full p-1 border border-gray-100/50">
+          <a href="/#about" class="text-sm font-semibold text-gray-600 hover:text-tf-graphite hover:bg-white px-4 py-1.5 rounded-full transition-all">About</a>
+          <a href="/#services" class="text-sm font-semibold text-gray-600 hover:text-tf-graphite hover:bg-white px-4 py-1.5 rounded-full transition-all">Services</a>
+          <a href="/#experience" class="text-sm font-semibold text-gray-600 hover:text-tf-graphite hover:bg-white px-4 py-1.5 rounded-full transition-all">Experience</a>
+          <a href="/#skills" class="text-sm font-semibold text-gray-600 hover:text-tf-graphite hover:bg-white px-4 py-1.5 rounded-full transition-all">Skills</a>
         </nav>
-        <a href="/#contact" class="hidden md:inline-flex px-5 py-2.5 bg-tf-graphite text-white text-sm font-medium rounded-full hover:bg-black transition-all">
-          Hire Me
+        <a href="/#contact" class="px-5 py-2.5 bg-tf-graphite text-white text-[13px] font-bold tracking-wide rounded-full hover:bg-signal-coral transition-colors flex items-center gap-2">
+          Let's Talk
+          <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
         </a>
-      </div>
-    </header>
+      </header>
+    </div>
 
-    <main id="main-content" class="pt-20 min-h-screen">
+    <main id="main-content" class="pt-32 min-h-screen">
       <slot />
     </main>
 
     <!-- Footer -->
-    <footer class="bg-tf-graphite text-white py-12 mt-20">
-      <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8">
-        <div class="col-span-1 md:col-span-2">
-          <a href="/" class="inline-block mb-4">
-            <img src="/logo-white.png" alt="AbdurRahman Logo" class="h-12 w-auto object-contain" />
+    <footer class="bg-white border-t border-gray-100 py-24 mt-32">
+      <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-8">
+        <div class="md:col-span-5 lg:col-span-4">
+          <a href="/" class="inline-block mb-6">
+            <img src="/logo-dark.png" alt="AbdurRahman Logo" class="h-10 w-auto object-contain" />
           </a>
-          <p class="text-gray-400 max-w-sm">Generative AI Engineer, Full-Stack Developer & Digital Creator building scalable, intelligent solutions.</p>
+          <p class="text-gray-500 font-medium leading-relaxed mb-8 max-w-sm">Generative AI Engineer, Full-Stack Developer & Founder of Techily Fly.</p>
         </div>
-        <div>
-          <h4 class="font-bold mb-4 text-signal-coral">Important Links</h4>
-          <ul class="space-y-2">
-            <li><a href="/privacy-policy" class="text-gray-400 hover:text-white transition-colors text-sm">Privacy Policy</a></li>
-            <li><a href="/terms-conditions" class="text-gray-400 hover:text-white transition-colors text-sm">Terms & Conditions</a></li>
-            <li><a href="/disclaimer" class="text-gray-400 hover:text-white transition-colors text-sm">Disclaimer</a></li>
-          </ul>
-        </div>
-        <div>
-          <h4 class="font-bold mb-4 text-signal-coral">Connect</h4>
-          <ul class="space-y-2">
-            <li><a href="/about" class="text-gray-400 hover:text-white transition-colors text-sm">About Us</a></li>
-            <li><a href="/#contact" class="text-gray-400 hover:text-white transition-colors text-sm">Contact Us</a></li>
-            <li><a href="/admin/login" class="text-gray-400 hover:text-white transition-colors text-sm">Admin</a></li>
-          </ul>
+        <div class="md:col-span-7 lg:col-span-8 grid grid-cols-2 md:grid-cols-3 gap-8">
+          <div>
+            <h4 class="font-bold mb-6 text-tf-graphite text-xs tracking-widest uppercase font-mono">Navigation</h4>
+            <ul class="space-y-4">
+              <li><a href="/#about" class="text-gray-500 hover:text-signal-coral transition-colors text-sm font-semibold">About</a></li>
+              <li><a href="/#services" class="text-gray-500 hover:text-signal-coral transition-colors text-sm font-semibold">Services</a></li>
+              <li><a href="/#experience" class="text-gray-500 hover:text-signal-coral transition-colors text-sm font-semibold">Experience</a></li>
+              <li><a href="/#skills" class="text-gray-500 hover:text-signal-coral transition-colors text-sm font-semibold">Skills</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-bold mb-6 text-tf-graphite text-xs tracking-widest uppercase font-mono">Connect</h4>
+            <ul class="space-y-4">
+              <li><a href="mailto:Contact@AbdurRahman.Top" class="text-gray-500 hover:text-signal-coral transition-colors text-sm font-semibold">Email</a></li>
+              <li><a href="https://linkedin.com/in/abdurrahmandottop" class="text-gray-500 hover:text-signal-coral transition-colors text-sm font-semibold">LinkedIn</a></li>
+              <li><a href="https://x.com/AbdurRahmanDotT" class="text-gray-500 hover:text-signal-coral transition-colors text-sm font-semibold">Twitter / X</a></li>
+            </ul>
+          </div>
+          <div class="col-span-2 md:col-span-1">
+            <h4 class="font-bold mb-6 text-tf-graphite text-xs tracking-widest uppercase font-mono">Legal</h4>
+            <ul class="space-y-4">
+              <li><a href="/privacy-policy" class="text-gray-500 hover:text-signal-coral transition-colors text-sm font-semibold">Privacy Policy</a></li>
+              <li><a href="/terms-conditions" class="text-gray-500 hover:text-signal-coral transition-colors text-sm font-semibold">Terms</a></li>
+              <li><a href="/disclaimer" class="text-gray-500 hover:text-signal-coral transition-colors text-sm font-semibold">Disclaimer</a></li>
+              <li><a href="/admin/login" class="text-gray-500 hover:text-signal-coral transition-colors text-sm font-semibold">Admin Login</a></li>
+            </ul>
+          </div>
         </div>
       </div>
-      <div class="max-w-7xl mx-auto px-6 mt-12 pt-8 border-t border-gray-700 text-center text-sm text-gray-500">
-        &copy; {new Date().getFullYear()} Techily Fly. All rights reserved.
+      <div class="max-w-7xl mx-auto px-6 mt-20 pt-8 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4 text-[13px] text-gray-400 font-semibold">
+        <p>&copy; {new Date().getFullYear()} AbdurRahman Dot Top. All rights reserved.</p>
+        <p class="flex items-center gap-1">Designed with <span class="text-signal-coral">&hearts;</span></p>
       </div>
     </footer>
   </body>
