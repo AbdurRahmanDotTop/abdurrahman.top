@@ -16,7 +16,7 @@ let aboutData = {
 
 if (aboutSectionRows.length > 0 && aboutSectionRows[0].isActive !== false) {
   try {
-    const parsed = JSON.parse(aboutSectionRows[0].content);
+    const parsed = JSON.parse(aboutSectionRows[0].content || '{}');
     if (parsed.heading) aboutData.heading = parsed.heading;
     if (parsed.text) aboutData.text = parsed.text;
     if (parsed.imageUrl) aboutData.imageUrl = parsed.imageUrl;

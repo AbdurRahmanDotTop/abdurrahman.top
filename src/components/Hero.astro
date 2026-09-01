@@ -24,7 +24,7 @@ let heroData = {
 
 if (heroSectionRows.length > 0 && heroSectionRows[0].isActive !== false) {
   try {
-    const parsed = JSON.parse(heroSectionRows[0].content);
+    const parsed = JSON.parse(heroSectionRows[0].content || '{}');
     if (parsed.heading) heroData.heading = parsed.heading;
     if (parsed.subheading) heroData.subheading = parsed.subheading;
     if (parsed.imageUrl) heroData.imageUrl = parsed.imageUrl;
