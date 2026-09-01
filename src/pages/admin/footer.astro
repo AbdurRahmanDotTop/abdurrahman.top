@@ -19,10 +19,14 @@ if (Astro.request.method === 'POST') {
     if (action === 'save_footer_settings') {
       const footerLogo = (data.get('footer_logo') as string) || '';
       const footerDesc = (data.get('footer_desc') as string) || '';
+      const contactMobile = (data.get('contact_mobile') as string) || '';
+      const contactAddress = (data.get('contact_address') as string) || '';
 
       const settingsToSave = [
         { key: 'footer_logo', value: footerLogo },
-        { key: 'footer_desc', value: footerDesc }
+        { key: 'footer_desc', value: footerDesc },
+        { key: 'contact_mobile', value: contactMobile },
+        { key: 'contact_address', value: contactAddress }
       ];
 
       for (const setting of settingsToSave) {
@@ -96,6 +100,8 @@ const settingsMap = allSettings.reduce((acc, curr) => {
 
 const currentFooterLogo = settingsMap['footer_logo'] || '/logo-dark.png';
 const currentFooterDesc = settingsMap['footer_desc'] || 'Generative AI Engineer, Full-Stack Developer & Founder of Techily Fly.';
+const currentContactMobile = settingsMap['contact_mobile'] || '';
+const currentContactAddress = settingsMap['contact_address'] || '';
 
 // Fetch current links
 let allFooterLinks = await db.select().from(footerLinks).orderBy(asc(footerLinks.order));
@@ -145,6 +151,16 @@ if (allFooterLinks.length === 0) {
         <div>
           <label class="block text-sm font-bold text-gray-700 mb-2">Footer Description</label>
           <textarea name="footer_desc" rows="4" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-signal-coral outline-none transition-all text-sm resize-none" placeholder="Short description about you or your company...">{currentFooterDesc}</textarea>
+        </div>
+
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-2">Contact Mobile</label>
+          <input type="text" name="contact_mobile" value={currentContactMobile} placeholder="+91 98765 43210" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-signal-coral outline-none transition-all font-medium text-sm" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-2">Contact Address</label>
+          <textarea name="contact_address" rows="2" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-signal-coral outline-none transition-all text-sm resize-none" placeholder="New Delhi, India">{currentContactAddress}</textarea>
         </div>
 
         <button type="submit" class="w-full px-6 py-3 bg-tf-graphite text-white font-bold rounded-xl hover:bg-black transition-colors flex items-center justify-center gap-2 shadow-lg shadow-black/10">
