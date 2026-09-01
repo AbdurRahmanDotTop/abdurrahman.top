@@ -1,0 +1,212 @@
+---
+export const prerender = false;
+
+import { eq, asc, notInArray } from 'drizzle-orm';
+import { getDb } from '../../db';
+import { menus } from '../../db/schema';
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { env } from "cloudflare:workers";
+
+const db = getDb(env.DB);
+
+// Default menus for backward compatibility if empty
+const defaultMenus = [
+  { id: crypto.randomUUID(), title: 'About', url: '/#about', order: 10, isActive: true, parentId: null },
+  { id: crypto.randomUUID(), title: 'Services', url: '/#services', order: 20, isActive: true, parentId: null },
+  { id: crypto.randomUUID(), title: 'Experience', url: '/#experience', order: 30, isActive: true, parentId: null },
+  { id: crypto.randomUUID(), title: 'Skills', url: '/#skills', order: 40, isActive: true, parentId: null },
+];
+
+let allMenus = await db.select().from(menus).orderBy(asc(menus.order));
+if (allMenus.length === 0) {
+  await db.insert(menus).values(defaultMenus);
+  allMenus = await db.select().from(menus).orderBy(asc(menus.order));
+}
+
+let message = '';
+if (Astro.request.method === 'POST') {
+  try {
+    const data = await Astro.request.formData();
+    const action = data.get('action') as string;
+
+    if (action === 'save_menus') {
+      const menusJson = data.get('menus_json') as string;
+      const parsedMenus = JSON.parse(menusJson);
+
+      const incomingIds = parsedMenus.map((m: any) => m.id).filter(Boolean);
+
+      // Delete menus that are not in the incoming payload
+      if (incomingIds.length > 0) {
+        await db.delete(menus).where(notInArray(menus.id, incomingIds));
+      } else {
+        // If all were removed
+        await db.delete(menus);
+      }
+
+      // Upsert menus
+      for (const m of parsedMenus) {
+        if (!m.id) {
+          m.id = crypto.randomUUID();
+        }
+        
+        // check if exists
+        const existing = await db.select().from(menus).where(eq(menus.id, m.id)).limit(1);
+        if (existing.length > 0) {
+          await db.update(menus)
+            .set({
+              title: m.title,
+              url: m.url,
+              icon: m.icon || null,
+              parentId: m.parentId || null,
+              order: parseInt(m.order) || 0,
+              isActive: m.isActive
+            })
+            .where(eq(menus.id, m.id));
+        } else {
+          await db.insert(menus).values({
+            id: m.id,
+            title: m.title,
+            url: m.url,
+            icon: m.icon || null,
+            parentId: m.parentId || null,
+            order: parseInt(m.order) || 0,
+            isActive: m.isActive
+          });
+        }
+      }
+
+      message = 'Menus updated successfully.';
+      allMenus = await db.select().from(menus).orderBy(asc(menus.order));
+    }
+  } catch (e: any) {
+    message = e.message || 'Error updating menus.';
+  }
+}
+---
+
+<AdminLayout title="Manage Menus" currentPath="/admin/menus">
+  <header class="mb-8 flex justify-between items-center">
+    <div>
+      <h1 class="text-3xl font-bold">Manage Menus</h1>
+      <p class="text-gray-500 mt-2">Manage website navigation menus and sub-menus.</p>
+    </div>
+  </header>
+
+  {message && <div class="mb-6 p-4 bg-emerald-50 text-emerald-700 border border-emerald-100 rounded-xl font-medium">{message}</div>}
+
+  <div class="bg-white p-6 md:p-8 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100/60" 
+       x-data={`{ 
+         menus: JSON.parse($el.dataset.menus || '[]'),
+         get parentMenus() { return this.menus.filter(m => !m.parentId); },
+         addMenu() {
+           this.menus.push({
+             id: crypto.randomUUID(),
+             title: 'New Menu',
+             url: '#',
+             icon: '',
+             parentId: '',
+             order: (this.menus.length + 1) * 10,
+             isActive: true
+           });
+         },
+         removeMenu(id) {
+           this.menus = this.menus.filter(m => m.id !== id && m.parentId !== id);
+         },
+         moveUp(index) {
+           if (index > 0) {
+             const temp = this.menus[index];
+             this.menus[index] = this.menus[index - 1];
+             this.menus[index - 1] = temp;
+             this.updateOrder();
+           }
+         },
+         moveDown(index) {
+           if (index < this.menus.length - 1) {
+             const temp = this.menus[index];
+             this.menus[index] = this.menus[index + 1];
+             this.menus[index + 1] = temp;
+             this.updateOrder();
+           }
+         },
+         updateOrder() {
+           this.menus.forEach((m, idx) => { m.order = (idx + 1) * 10; });
+         }
+       }`} 
+       data-menus={JSON.stringify(allMenus)}>
+    
+    <div class="flex justify-between items-center mb-6">
+        <h3 class="text-xl font-bold flex items-center gap-2">
+          <svg class="w-5 h-5 text-signal-coral" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
+          Menu Items
+        </h3>
+        <button type="button" @click="addMenu()" class="px-4 py-2 bg-tf-graphite text-white text-sm font-bold tracking-wide rounded-lg hover:bg-signal-coral transition-colors flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+            Add Menu Item
+        </button>
+    </div>
+
+    <form method="POST">
+      <input type="hidden" name="action" value="save_menus" />
+      <input type="hidden" name="menus_json" :value="JSON.stringify(menus)" />
+
+      <div class="space-y-4 mb-8">
+        <template x-for="(menu, index) in menus" :key="menu.id">
+          <div class="p-4 border border-gray-200 rounded-xl bg-gray-50/50 flex flex-col md:flex-row gap-4 items-start md:items-center relative transition-all"
+               :class="{'ml-8 border-l-4 border-l-signal-coral': menu.parentId}">
+            
+            <!-- Controls -->
+            <div class="flex flex-col gap-1 items-center shrink-0">
+                <button type="button" @click="moveUp(index)" class="p-1 text-gray-400 hover:text-signal-coral disabled:opacity-30" :disabled="index === 0">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7" /></svg>
+                </button>
+                <button type="button" @click="moveDown(index)" class="p-1 text-gray-400 hover:text-signal-coral disabled:opacity-30" :disabled="index === menus.length - 1">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" /></svg>
+                </button>
+            </div>
+
+            <!-- Fields -->
+            <div class="flex-1 grid grid-cols-1 md:grid-cols-4 gap-4 w-full">
+                <div class="col-span-1">
+                    <label class="block text-xs font-bold text-gray-500 mb-1">Title</label>
+                    <input type="text" x-model="menu.title" class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-signal-coral focus:border-transparent outline-none transition-all font-medium text-sm" />
+                </div>
+                <div class="col-span-1">
+                    <label class="block text-xs font-bold text-gray-500 mb-1">URL / Link</label>
+                    <input type="text" x-model="menu.url" class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-signal-coral focus:border-transparent outline-none transition-all font-medium text-sm" />
+                </div>
+                <div class="col-span-1">
+                    <label class="block text-xs font-bold text-gray-500 mb-1">Parent Menu (Sub-menu)</label>
+                    <select x-model="menu.parentId" class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-signal-coral focus:border-transparent outline-none transition-all font-medium text-sm">
+                        <option value="">None (Top Level)</option>
+                        <template x-for="p in parentMenus" :key="p.id">
+                            <option x-show="p.id !== menu.id" :value="p.id" x-text="p.title"></option>
+                        </template>
+                    </select>
+                </div>
+                <div class="col-span-1 flex items-center justify-between gap-4 mt-2 md:mt-0">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" x-model="menu.isActive" class="w-4 h-4 text-signal-coral focus:ring-signal-coral border-gray-300 rounded" />
+                        <span class="text-sm font-bold text-gray-700">Active</span>
+                    </label>
+                    <button type="button" @click="removeMenu(menu.id)" class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Delete Menu">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    </button>
+                </div>
+            </div>
+          </div>
+        </template>
+        
+        <div x-show="menus.length === 0" class="text-center py-10 bg-gray-50 rounded-xl border border-gray-200 border-dashed">
+            <p class="text-gray-500 font-medium">No menus found. Click "Add Menu Item" to create one.</p>
+        </div>
+      </div>
+
+      <div class="flex justify-end">
+        <button type="submit" class="px-6 py-3 bg-signal-coral text-white font-bold tracking-wide rounded-xl hover:bg-red-500 transition-colors shadow-lg shadow-signal-coral/20 flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+          Save All Changes
+        </button>
+      </div>
+    </form>
+  </div>
+</AdminLayout>

@@ -4,9 +4,9 @@ import Cursor from '../components/Cursor.astro';
 import BackToTop from '../components/BackToTop.astro';
 import TawkWidget from '../components/TawkWidget.astro';
 
-import { eq } from 'drizzle-orm';
+import { eq, asc } from 'drizzle-orm';
 import { getDb } from '../db';
-import { socialLinks, siteSettings } from '../db/schema';
+import { socialLinks, siteSettings, menus } from '../db/schema';
 import { env } from 'cloudflare:workers';
 
 export interface Props {
@@ -20,6 +20,16 @@ const props = Astro.props;
 
 let activeSocialLinks: any[] = [];
 let globalSettings: Record<string, string> = {};
+let activeMenus: any[] = [];
+
+// Default fallback menus if DB is empty
+const defaultMenus = [
+  { id: 'about', title: 'About', url: '/#about', parentId: null, children: [] },
+  { id: 'services', title: 'Services', url: '/#services', parentId: null, children: [] },
+  { id: 'experience', title: 'Experience', url: '/#experience', parentId: null, children: [] },
+  { id: 'skills', title: 'Skills', url: '/#skills', parentId: null, children: [] },
+];
+let structuredMenus: any[] = [];
 
 try {
   const db = getDb(env.DB);
@@ -32,6 +42,25 @@ try {
   settingsDb.forEach(s => {
     globalSettings[s.key] = s.value;
   });
+
+  // Fetch menus
+  activeMenus = await db.select().from(menus).where(eq(menus.isActive, true)).orderBy(asc(menus.order));
+  
+  // Build nested menu structure
+  if (activeMenus.length > 0) {
+    const parentMenus = activeMenus.filter(m => !m.parentId).map(m => ({ ...m, children: [] }));
+    const childMenus = activeMenus.filter(m => m.parentId);
+    
+    childMenus.forEach(child => {
+      const parent = parentMenus.find(p => p.id === child.parentId);
+      if (parent) {
+        parent.children.push(child);
+      }
+    });
+    structuredMenus = parentMenus;
+  } else {
+    structuredMenus = defaultMenus;
+  }
 
 } catch (e) {
   console.error("Failed to fetch data for layout:", e);
@@ -100,10 +129,30 @@ const seoKeywords = globalSettings['seo_keywords'] || "ai, engineer, developer, 
         </a>
         
         <nav class="hidden md:flex items-center gap-1 bg-gray-50/50 rounded-full p-1 border border-gray-100/50">
-          <a href="/#about" class="text-sm font-semibold text-gray-600 hover:text-tf-graphite hover:bg-white px-4 py-1.5 rounded-full transition-all">About</a>
-          <a href="/#services" class="text-sm font-semibold text-gray-600 hover:text-tf-graphite hover:bg-white px-4 py-1.5 rounded-full transition-all">Services</a>
-          <a href="/#experience" class="text-sm font-semibold text-gray-600 hover:text-tf-graphite hover:bg-white px-4 py-1.5 rounded-full transition-all">Experience</a>
-          <a href="/#skills" class="text-sm font-semibold text-gray-600 hover:text-tf-graphite hover:bg-white px-4 py-1.5 rounded-full transition-all">Skills</a>
+          {structuredMenus.map((menu) => (
+            <div class="relative group">
+              <a href={menu.url} class="text-sm font-semibold text-gray-600 hover:text-tf-graphite hover:bg-white px-4 py-1.5 rounded-full transition-all flex items-center gap-1">
+                {menu.icon && <div class="w-4 h-4" set:html={menu.icon} />}
+                {menu.title}
+                {menu.children.length > 0 && (
+                  <svg class="w-3 h-3 text-gray-400 group-hover:text-tf-graphite transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" /></svg>
+                )}
+              </a>
+              
+              {menu.children.length > 0 && (
+                <div class="absolute left-0 top-full pt-2 opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-200 z-50">
+                  <div class="bg-white/95 backdrop-blur-xl border border-gray-100 shadow-xl rounded-2xl py-2 min-w-[200px] flex flex-col gap-1">
+                    {menu.children.map((child: any) => (
+                      <a href={child.url} class="text-sm font-semibold text-gray-600 hover:text-tf-graphite hover:bg-gray-50 px-4 py-2 mx-2 rounded-xl transition-all flex items-center gap-2">
+                        {child.icon && <div class="w-4 h-4 text-signal-coral" set:html={child.icon} />}
+                        {child.title}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
         </nav>
         
         <a href="/#contact" class="px-5 py-2.5 bg-tf-graphite text-white text-[13px] font-bold tracking-wide rounded-full hover:bg-signal-coral transition-colors flex items-center gap-2 shrink-0">
@@ -114,11 +163,28 @@ const seoKeywords = globalSettings['seo_keywords'] || "ai, engineer, developer, 
     </div>
 
     <!-- Mobile Nav Dropdown -->
-    <div id="mobile-nav-dropdown" class="fixed top-24 left-6 right-6 z-40 bg-white/95 backdrop-blur-xl border border-gray-200 shadow-xl rounded-2xl p-4 flex flex-col gap-2 transform -translate-y-4 opacity-0 pointer-events-none transition-all duration-300 md:hidden">
-      <a href="/#about" class="mobile-nav-link text-base font-semibold text-gray-600 hover:text-tf-graphite hover:bg-gray-50 px-4 py-3 rounded-xl transition-all">About</a>
-      <a href="/#services" class="mobile-nav-link text-base font-semibold text-gray-600 hover:text-tf-graphite hover:bg-gray-50 px-4 py-3 rounded-xl transition-all">Services</a>
-      <a href="/#experience" class="mobile-nav-link text-base font-semibold text-gray-600 hover:text-tf-graphite hover:bg-gray-50 px-4 py-3 rounded-xl transition-all">Experience</a>
-      <a href="/#skills" class="mobile-nav-link text-base font-semibold text-gray-600 hover:text-tf-graphite hover:bg-gray-50 px-4 py-3 rounded-xl transition-all">Skills</a>
+    <div id="mobile-nav-dropdown" class="fixed top-24 left-6 right-6 z-40 bg-white/95 backdrop-blur-xl border border-gray-200 shadow-xl rounded-2xl p-4 flex flex-col gap-2 transform -translate-y-4 opacity-0 pointer-events-none transition-all duration-300 md:hidden max-h-[70vh] overflow-y-auto">
+      {structuredMenus.map((menu) => (
+        <div class="flex flex-col">
+          <a href={menu.url} class="mobile-nav-link text-base font-semibold text-gray-600 hover:text-tf-graphite hover:bg-gray-50 px-4 py-3 rounded-xl transition-all flex items-center justify-between">
+            <span class="flex items-center gap-2">
+              {menu.icon && <div class="w-5 h-5" set:html={menu.icon} />}
+              {menu.title}
+            </span>
+          </a>
+          
+          {menu.children.length > 0 && (
+            <div class="pl-6 pr-2 py-1 flex flex-col gap-1 border-l-2 border-gray-100 ml-6 mt-1">
+              {menu.children.map((child: any) => (
+                <a href={child.url} class="mobile-nav-link text-sm font-semibold text-gray-500 hover:text-signal-coral hover:bg-red-50/50 px-4 py-2.5 rounded-xl transition-all flex items-center gap-2">
+                  {child.icon && <div class="w-4 h-4 text-signal-coral" set:html={child.icon} />}
+                  {child.title}
+                </a>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
     </div>
 
     <main id="main-content" class="pt-32 min-h-screen">
@@ -181,10 +247,26 @@ const seoKeywords = globalSettings['seo_keywords'] || "ai, engineer, developer, 
           <div>
             <h4 class="font-bold mb-6 text-tf-graphite text-xs tracking-widest uppercase font-mono">Navigation</h4>
             <ul class="space-y-4">
-              <li><a href="/#about" class="text-gray-500 hover:text-signal-coral transition-colors text-sm font-semibold">About</a></li>
-              <li><a href="/#services" class="text-gray-500 hover:text-signal-coral transition-colors text-sm font-semibold">Services</a></li>
-              <li><a href="/#experience" class="text-gray-500 hover:text-signal-coral transition-colors text-sm font-semibold">Experience</a></li>
-              <li><a href="/#skills" class="text-gray-500 hover:text-signal-coral transition-colors text-sm font-semibold">Skills</a></li>
+              {structuredMenus.map((menu) => (
+                <li>
+                  <a href={menu.url} class="text-gray-500 hover:text-signal-coral transition-colors text-sm font-semibold flex items-center gap-2">
+                    {menu.icon && <div class="w-4 h-4" set:html={menu.icon} />}
+                    {menu.title}
+                  </a>
+                  {menu.children.length > 0 && (
+                    <ul class="pl-4 mt-3 space-y-3 border-l border-gray-100">
+                      {menu.children.map((child: any) => (
+                        <li>
+                          <a href={child.url} class="text-gray-400 hover:text-signal-coral transition-colors text-sm font-semibold flex items-center gap-2">
+                            {child.icon && <div class="w-3 h-3" set:html={child.icon} />}
+                            {child.title}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              ))}
             </ul>
           </div>
           <div>

@@ -70,3 +70,13 @@ export const socialLinks = sqliteTable("social_links", {
   isActive: integer("is_active", { mode: "boolean" }).default(true),
   showInHero: integer("show_in_hero", { mode: "boolean" }).default(true),
 });
+
+export const menus = sqliteTable("menus", {
+  id: text("id").primaryKey(),
+  title: text("title").notNull(),
+  url: text("url").notNull(),
+  icon: text("icon"),
+  parentId: text("parent_id"),
+  order: integer("order").default(0),
+  isActive: integer("is_active", { mode: "boolean" }).default(true),
+});
