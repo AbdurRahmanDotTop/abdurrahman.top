@@ -1,4 +1,6 @@
 ---
+import '../styles/global.css';
+
 export interface Props {
   title: string;
   currentPath: string;
@@ -21,7 +23,6 @@ const menuItems = [
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title} - Admin Panel</title>
-    <link href="/src/styles/global.css" rel="stylesheet" />
     <script>
       // Setup mobile menu toggle
       document.addEventListener('DOMContentLoaded', () => {

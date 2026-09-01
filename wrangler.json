@@ -24,5 +24,10 @@
     "abdurrahman.top/*",
     "www.abdurrahman.top/*"
   ],
-  "workers_dev": true
+  "workers_dev": true,
+  "vars": {
+    "BREVO_API_KEY": "",
+    "BREVO_SENDER_EMAIL": "",
+    "BREVO_RECEIVER_EMAIL": ""
+  }
 }

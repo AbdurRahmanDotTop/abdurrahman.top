@@ -9,7 +9,8 @@ import { verifyPassword, hashPassword, createSessionCookie } from '../../lib/aut
 let errorMessage = '';
 let isFirstSetup = false;
 
-import { env } from "cloudflare:workers";
+const locals = Astro.locals as any;
+const env = locals.runtime?.env;
 const db = getDb(env.DB);
 const existingUsers = await db.select().from(users).limit(1);
 

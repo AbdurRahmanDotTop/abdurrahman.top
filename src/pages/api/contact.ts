@@ -5,7 +5,7 @@ import { env } from "cloudflare:workers";
 
 export const POST: APIRoute = async ({ request }) => {
   try {
-    const data = await request.json();
+    const data: any = await request.json();
     const { name, email, company, projectType, budget, timeline, source, message } = data;
 
     // Validate required fields
