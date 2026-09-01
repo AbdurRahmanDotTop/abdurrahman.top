@@ -1,0 +1,219 @@
+---
+export const prerender = false;
+
+import { eq } from 'drizzle-orm';
+import { getDb } from '../../../db';
+import { blogPosts } from '../../../db/schema';
+import { env } from "cloudflare:workers";
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+
+const db = getDb(env.DB);
+let message = '';
+let post: any = null;
+
+const url = new URL(Astro.request.url);
+const id = url.searchParams.get('id');
+
+if (id) {
+  const existingPosts = await db.select().from(blogPosts).where(eq(blogPosts.id, id)).limit(1);
+  if (existingPosts.length > 0) {
+    post = existingPosts[0];
+  }
+}
+
+if (Astro.request.method === 'POST') {
+  try {
+    const data = await Astro.request.formData();
+    const title = data.get('title') as string;
+    let slug = data.get('slug') as string;
+    const excerpt = data.get('excerpt') as string;
+    const featuredImage = data.get('featuredImage') as string;
+    const content = data.get('content') as string;
+    const isPublished = data.get('isPublished') === 'on';
+
+    if (!title || !content) {
+      throw new Error('Title and content are required.');
+    }
+
+    if (!slug) {
+      slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+    }
+
+    if (post) {
+      // Update
+      await db.update(blogPosts).set({
+        title,
+        slug,
+        excerpt,
+        featuredImage,
+        content,
+        isPublished,
+        publishedAt: isPublished && !post.publishedAt ? new Date() : post.publishedAt,
+        updatedAt: new Date(),
+      }).where(eq(blogPosts.id, post.id));
+      
+      return Astro.redirect('/admin/blog');
+    } else {
+      // Insert
+      const newId = crypto.randomUUID();
+      await db.insert(blogPosts).values({
+        id: newId,
+        title,
+        slug,
+        excerpt,
+        featuredImage,
+        content,
+        isPublished,
+        publishedAt: isPublished ? new Date() : null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+
+      return Astro.redirect('/admin/blog');
+    }
+  } catch (e: any) {
+    message = e.message || 'Error processing request.';
+  }
+}
+---
+
+<AdminLayout title={post ? 'Edit Post' : 'New Post'} currentPath="/admin/blog">
+  <!-- Include Quill stylesheet -->
+  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+  
+  <header class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div>
+      <h1 class="text-3xl font-bold">{post ? 'Edit Blog Post' : 'Create New Post'}</h1>
+      <p class="text-gray-500 mt-2">Write and format your article with our advanced editor.</p>
+    </div>
+    <a href="/admin/blog" class="px-6 py-3 bg-white text-gray-700 font-bold rounded-xl border border-gray-200 transition-all hover:bg-gray-50 hover:-translate-x-1 flex items-center gap-2">
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+      Back to List
+    </a>
+  </header>
+
+  {message && <div class="mb-6 p-4 bg-red-50 text-red-700 rounded-xl font-medium border border-red-100">{message}</div>}
+
+  <form method="POST" id="post-form" class="space-y-8 pb-12">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      
+      <div class="lg:col-span-2 space-y-8">
+        <div class="bg-white p-6 md:p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100/60">
+          <div class="mb-6">
+            <label class="block text-sm font-bold text-tf-graphite mb-2">Post Title *</label>
+            <input type="text" name="title" id="title-input" required value={post?.title || ''} class="w-full px-5 py-4 text-xl rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-signal-coral focus:ring-2 focus:ring-signal-coral/20 outline-none transition-all font-bold placeholder-gray-300" placeholder="e.g., Introduction to Generative AI" />
+          </div>
+
+          <div class="mb-6">
+            <label class="block text-sm font-bold text-tf-graphite mb-2">Content *</label>
+            <div class="border border-gray-200 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-signal-coral/20 focus-within:border-signal-coral transition-all">
+              <div id="editor" class="bg-white min-h-[400px] text-lg"></div>
+            </div>
+            <textarea name="content" id="hidden-content" class="hidden">{post?.content || ''}</textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-8">
+        <div class="bg-white p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100/60">
+          <h3 class="font-bold text-tf-graphite mb-4 text-lg border-b border-gray-100 pb-3">Publishing</h3>
+          
+          <div class="mb-6">
+            <label class="flex items-center gap-3 cursor-pointer">
+              <div class="relative">
+                <input type="checkbox" name="isPublished" class="sr-only peer" checked={post?.isPublished} />
+                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-signal-coral"></div>
+              </div>
+              <span class="text-sm font-bold text-gray-700">Publish immediately</span>
+            </label>
+            <p class="text-xs text-gray-500 mt-2">If unchecked, the post will be saved as a draft.</p>
+          </div>
+
+          <button type="submit" class="w-full py-4 px-6 bg-tf-graphite hover:bg-black text-white font-bold rounded-xl transition-all shadow-lg shadow-black/10 flex justify-center items-center gap-2">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+            Save Post
+          </button>
+        </div>
+
+        <div class="bg-white p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100/60">
+          <h3 class="font-bold text-tf-graphite mb-4 text-lg border-b border-gray-100 pb-3">Post Meta</h3>
+          
+          <div class="mb-5">
+            <label class="block text-sm font-bold text-gray-700 mb-2">URL Slug</label>
+            <input type="text" name="slug" id="slug-input" value={post?.slug || ''} class="w-full px-4 py-3 text-sm rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-signal-coral focus:ring-2 focus:ring-signal-coral/20 outline-none transition-all" placeholder="Leave empty to auto-generate" />
+          </div>
+
+          <div class="mb-5">
+            <label class="block text-sm font-bold text-gray-700 mb-2">Excerpt</label>
+            <textarea name="excerpt" rows="3" class="w-full px-4 py-3 text-sm rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-signal-coral focus:ring-2 focus:ring-signal-coral/20 outline-none transition-all resize-none" placeholder="Short description for the blog list...">{post?.excerpt || ''}</textarea>
+          </div>
+
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-2">Featured Image URL</label>
+            <input type="url" name="featuredImage" value={post?.featuredImage || ''} class="w-full px-4 py-3 text-sm rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-signal-coral focus:ring-2 focus:ring-signal-coral/20 outline-none transition-all" placeholder="https://example.com/image.jpg" />
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </form>
+
+  <!-- Include Quill JS -->
+  <script is:inline src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize Quill
+      var quill = new Quill('#editor', {
+        theme: 'snow',
+        placeholder: 'Write your amazing content here...',
+        modules: {
+          toolbar: [
+            [{ 'header': [1, 2, 3, false] }],
+            ['bold', 'italic', 'underline', 'strike'],
+            ['blockquote', 'code-block'],
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            [{ 'script': 'sub'}, { 'script': 'super' }],
+            [{ 'indent': '-1'}, { 'indent': '+1' }],
+            [{ 'direction': 'rtl' }],
+            [{ 'color': [] }, { 'background': [] }],
+            [{ 'align': [] }],
+            ['link', 'image', 'video'],
+            ['clean']
+          ]
+        }
+      });
+
+      // Load existing content
+      var hiddenContent = document.getElementById('hidden-content');
+      if (hiddenContent.value) {
+        quill.root.innerHTML = hiddenContent.value;
+      }
+
+      // Sync Quill to hidden textarea on form submit
+      var form = document.getElementById('post-form');
+      form.addEventListener('submit', function(e) {
+        // Prevent empty content submission (Quill usually has <p><br></p> when empty)
+        var content = quill.root.innerHTML;
+        if (content === '<p><br></p>') {
+          content = '';
+        }
+        hiddenContent.value = content;
+      });
+
+      // Auto-generate slug from title
+      var titleInput = document.getElementById('title-input');
+      var slugInput = document.getElementById('slug-input');
+      
+      titleInput.addEventListener('input', function() {
+        if (!slugInput.dataset.manuallyEdited) {
+          var slug = titleInput.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+          slugInput.value = slug;
+        }
+      });
+
+      slugInput.addEventListener('input', function() {
+        slugInput.dataset.manuallyEdited = 'true';
+      });
+    });
+  </script>
+</AdminLayout>
