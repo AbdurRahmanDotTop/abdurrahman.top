@@ -6,29 +6,42 @@ import TawkWidget from '../components/TawkWidget.astro';
 
 import { eq } from 'drizzle-orm';
 import { getDb } from '../db';
-import { socialLinks } from '../db/schema';
+import { socialLinks, siteSettings } from '../db/schema';
 import { env } from 'cloudflare:workers';
 
 export interface Props {
-  title: string;
+  title?: string;
   description?: string;
   image?: string;
 }
 
-const { 
-  title, 
-  description = "AbdurRahman - Developer Portfolio", 
-  image = "/og-image.jpg" 
-} = Astro.props;
+// Default props (can be overridden by siteSettings)
+const props = Astro.props;
 
-// Fetch social links
 let activeSocialLinks: any[] = [];
+let globalSettings: Record<string, string> = {};
+
 try {
   const db = getDb(env.DB);
+  
+  // Fetch social links
   activeSocialLinks = await db.select().from(socialLinks).where(eq(socialLinks.isActive, true));
+  
+  // Fetch site settings
+  const settingsDb = await db.select().from(siteSettings);
+  settingsDb.forEach(s => {
+    globalSettings[s.key] = s.value;
+  });
+
 } catch (e) {
-  console.error("Failed to fetch social links for layout:", e);
+  console.error("Failed to fetch data for layout:", e);
 }
+
+// Compute final metadata (Props > Settings > Fallbacks)
+const finalTitle = props.title || globalSettings['site_title'] || "AbdurRahman - Developer Portfolio";
+const finalDescription = props.description || globalSettings['site_description'] || "AbdurRahman - AI Engineer & Full-Stack Developer Portfolio";
+const finalImage = props.image || "/og-image.jpg";
+const seoKeywords = globalSettings['seo_keywords'] || "ai, engineer, developer, fullstack, portfolio";
 ---
 
 <!DOCTYPE html>
@@ -36,25 +49,32 @@ try {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{title}</title>
-    <meta name="description" content={description} />
+    <title>{finalTitle}</title>
+    <meta name="description" content={finalDescription} />
+    <meta name="keywords" content={seoKeywords} />
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:image" content={image} />
+    <meta property="og:title" content={finalTitle} />
+    <meta property="og:description" content={finalDescription} />
+    <meta property="og:image" content={finalImage} />
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:title" content={title} />
-    <meta property="twitter:description" content={description} />
-    <meta property="twitter:image" content={image} />
+    <meta property="twitter:title" content={finalTitle} />
+    <meta property="twitter:description" content={finalDescription} />
+    <meta property="twitter:image" content={finalImage} />
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="/logo-dark.png" />
+    
+    <!-- Custom Head Scripts -->
+    {globalSettings['custom_head_scripts'] && <Fragment set:html={globalSettings['custom_head_scripts']} />}
   </head>
   <body class="bg-cloud-surface text-tf-graphite font-sans antialiased selection:bg-signal-coral selection:text-white">
+    <!-- Custom Body Scripts -->
+    {globalSettings['custom_body_scripts'] && <Fragment set:html={globalSettings['custom_body_scripts']} />}
+    
     <!-- Skip to content link for accessibility -->
     <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:p-4 focus:bg-tf-graphite focus:text-white z-50">
       Skip to main content
