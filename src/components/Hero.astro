@@ -19,7 +19,9 @@ let heroData = {
   heading: "Salaam, I'm <br />\n<span class=\"text-signal-coral\">AbdurRahman.</span>",
   subheading: "A multi-disciplinary <strong class=\"text-tf-graphite font-semibold\">Generative AI Engineer</strong> and <strong class=\"text-tf-graphite font-semibold\">Full-Stack Developer</strong> building intelligent, scalable digital experiences.",
   imageUrl: "",
-  badge: "Available for new opportunities"
+  badge: "Available for new opportunities",
+  primaryButtonText: "Explore My Work",
+  primaryButtonLink: "#about"
 };
 
 if (heroSectionRows.length > 0 && heroSectionRows[0].isActive !== false) {
@@ -29,6 +31,8 @@ if (heroSectionRows.length > 0 && heroSectionRows[0].isActive !== false) {
     if (parsed.subheading) heroData.subheading = parsed.subheading;
     if (parsed.imageUrl) heroData.imageUrl = parsed.imageUrl;
     if (parsed.badge) heroData.badge = parsed.badge;
+    if (parsed.primaryButtonText) heroData.primaryButtonText = parsed.primaryButtonText;
+    if (parsed.primaryButtonLink) heroData.primaryButtonLink = parsed.primaryButtonLink;
   } catch(e) {}
 }
 ---
@@ -58,10 +62,12 @@ if (heroSectionRows.length > 0 && heroSectionRows[0].isActive !== false) {
         </div>
 
         <div class="flex flex-wrap items-center gap-4 md:gap-6 pt-8 opacity-0-init animate-fade-in-up" style="animation-delay: 0.6s;">
-          <a href="#about" class="px-6 md:px-8 py-3.5 md:py-4 rounded-full bg-tf-graphite text-white font-bold tracking-wide hover:bg-signal-coral transition-all shadow-xl shadow-tf-graphite/10 hover:shadow-signal-coral/20 hover:-translate-y-1 flex items-center gap-2 md:gap-3 text-sm md:text-base">
-            Explore My Work
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg>
-          </a>
+          {heroData.primaryButtonText && (
+            <a href={heroData.primaryButtonLink} class="px-6 md:px-8 py-3.5 md:py-4 rounded-full bg-tf-graphite text-white font-bold tracking-wide hover:bg-signal-coral transition-all shadow-xl shadow-tf-graphite/10 hover:shadow-signal-coral/20 hover:-translate-y-1 flex items-center gap-2 md:gap-3 text-sm md:text-base">
+              {heroData.primaryButtonText}
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg>
+            </a>
+          )}
           
           {cvUrl && (
             <a href={cvUrl} target="_blank" rel="noopener noreferrer" class="px-6 md:px-8 py-3.5 md:py-4 rounded-full bg-white text-tf-graphite border border-gray-200 font-bold tracking-wide hover:border-signal-coral hover:text-signal-coral transition-all shadow-sm hover:shadow-lg hover:shadow-signal-coral/10 hover:-translate-y-1 flex items-center gap-2 md:gap-3 text-sm md:text-base">
