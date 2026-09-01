@@ -78,6 +78,16 @@ const settingsMap = allSettings.reduce((acc, curr) => {
   return acc;
 }, {} as Record<string, string>);
 
+const defaultSettings = {
+  site_title: "AbdurRahman - Developer Portfolio",
+  site_description: "AbdurRahman - AI Engineer & Full-Stack Developer Portfolio",
+  seo_keywords: "ai, engineer, developer, fullstack, portfolio",
+  custom_head_scripts: "",
+  custom_body_scripts: ""
+};
+
+const mergedSettings = { ...defaultSettings, ...settingsMap };
+
 ---
 
 <AdminLayout title="Global Settings" currentPath="/admin/settings">
@@ -111,29 +121,29 @@ const settingsMap = allSettings.reduce((acc, curr) => {
         
         <div>
           <label class="block text-sm font-bold text-gray-700 mb-2">Site Title</label>
-          <input type="text" name="site_title" value={settingsMap['site_title'] || ''} class="w-full px-4 py-3 bg-gray-50 rounded-xl border border-gray-200 focus:bg-white focus:ring-2 focus:ring-signal-coral/20 focus:border-signal-coral outline-none transition-all" placeholder="e.g. AbdurRahman - AI Engineer" />
+          <input type="text" name="site_title" value={mergedSettings['site_title']} class="w-full px-4 py-3 bg-gray-50 rounded-xl border border-gray-200 focus:bg-white focus:ring-2 focus:ring-signal-coral/20 focus:border-signal-coral outline-none transition-all" placeholder="e.g. AbdurRahman - AI Engineer" />
         </div>
 
         <div>
           <label class="block text-sm font-bold text-gray-700 mb-2">Site Description</label>
-          <textarea name="site_description" rows="3" class="w-full px-4 py-3 bg-gray-50 rounded-xl border border-gray-200 focus:bg-white focus:ring-2 focus:ring-signal-coral/20 focus:border-signal-coral outline-none transition-all resize-none" placeholder="Brief description for search results...">{settingsMap['site_description'] || ''}</textarea>
+          <textarea name="site_description" rows="3" class="w-full px-4 py-3 bg-gray-50 rounded-xl border border-gray-200 focus:bg-white focus:ring-2 focus:ring-signal-coral/20 focus:border-signal-coral outline-none transition-all resize-none" placeholder="Brief description for search results...">{mergedSettings['site_description']}</textarea>
         </div>
 
         <div>
           <label class="block text-sm font-bold text-gray-700 mb-2">SEO Keywords</label>
-          <input type="text" name="seo_keywords" value={settingsMap['seo_keywords'] || ''} class="w-full px-4 py-3 bg-gray-50 rounded-xl border border-gray-200 focus:bg-white focus:ring-2 focus:ring-signal-coral/20 focus:border-signal-coral outline-none transition-all" placeholder="ai, engineer, developer, portfolio" />
+          <input type="text" name="seo_keywords" value={mergedSettings['seo_keywords']} class="w-full px-4 py-3 bg-gray-50 rounded-xl border border-gray-200 focus:bg-white focus:ring-2 focus:ring-signal-coral/20 focus:border-signal-coral outline-none transition-all" placeholder="ai, engineer, developer, portfolio" />
         </div>
 
         <div class="pt-4 border-t border-gray-100">
           <label class="block text-sm font-bold text-gray-700 mb-2">Custom Head Scripts &lt;head&gt;</label>
           <p class="text-xs text-gray-400 mb-2">E.g., Google Analytics, Meta Pixel. Paste the entire &lt;script&gt; tag.</p>
-          <textarea name="custom_head_scripts" rows="3" class="w-full px-4 py-3 bg-gray-50 rounded-xl border border-gray-200 focus:bg-white focus:ring-2 focus:ring-signal-coral/20 focus:border-signal-coral outline-none transition-all font-mono text-xs">{settingsMap['custom_head_scripts'] || ''}</textarea>
+          <textarea name="custom_head_scripts" rows="3" class="w-full px-4 py-3 bg-gray-50 rounded-xl border border-gray-200 focus:bg-white focus:ring-2 focus:ring-signal-coral/20 focus:border-signal-coral outline-none transition-all font-mono text-xs">{mergedSettings['custom_head_scripts']}</textarea>
         </div>
 
         <div>
           <label class="block text-sm font-bold text-gray-700 mb-2">Custom Body Scripts &lt;body&gt;</label>
           <p class="text-xs text-gray-400 mb-2">E.g., Additional chat widgets or body trackers.</p>
-          <textarea name="custom_body_scripts" rows="3" class="w-full px-4 py-3 bg-gray-50 rounded-xl border border-gray-200 focus:bg-white focus:ring-2 focus:ring-signal-coral/20 focus:border-signal-coral outline-none transition-all font-mono text-xs">{settingsMap['custom_body_scripts'] || ''}</textarea>
+          <textarea name="custom_body_scripts" rows="3" class="w-full px-4 py-3 bg-gray-50 rounded-xl border border-gray-200 focus:bg-white focus:ring-2 focus:ring-signal-coral/20 focus:border-signal-coral outline-none transition-all font-mono text-xs">{mergedSettings['custom_body_scripts']}</textarea>
         </div>
 
         <button type="submit" class="w-full py-3.5 bg-tf-graphite hover:bg-black text-white font-bold rounded-xl transition-all shadow-lg shadow-black/10 mt-2">
