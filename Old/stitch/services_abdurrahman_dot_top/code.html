@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ARCHITECT.AI - Services</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;600&amp;family=Manrope:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container": "#eeeeee",
+                        "secondary-fixed-dim": "#ffb4a4",
+                        "tertiary": "#0b0a09",
+                        "on-tertiary-fixed": "#1c1b1a",
+                        "surface": "#f9f9f9",
+                        "background": "#f9f9f9",
+                        "secondary": "#a83820",
+                        "on-secondary-fixed-variant": "#87200a",
+                        "on-surface-variant": "#444748",
+                        "inverse-surface": "#2f3131",
+                        "on-tertiary-fixed-variant": "#484645",
+                        "inverse-primary": "#c8c6c5",
+                        "on-primary-fixed-variant": "#474746",
+                        "on-surface": "#1a1c1c",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-container": "#fc7557",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-highest": "#e2e2e2",
+                        "on-primary": "#ffffff",
+                        "on-primary-container": "#898888",
+                        "on-tertiary-container": "#8b8886",
+                        "surface-container-high": "#e8e8e8",
+                        "surface-container-low": "#f3f3f3",
+                        "on-secondary-fixed": "#3d0600",
+                        "on-error": "#ffffff",
+                        "primary": "#0a0a0a",
+                        "on-error-container": "#93000a",
+                        "error": "#ba1a1a",
+                        "surface-tint": "#5f5e5e",
+                        "surface-dim": "#dadada",
+                        "on-background": "#1a1c1c",
+                        "tertiary-container": "#222120",
+                        "primary-fixed": "#e5e2e1",
+                        "surface-variant": "#e2e2e2",
+                        "error-container": "#ffdad6",
+                        "surface-bright": "#f9f9f9",
+                        "primary-container": "#212121",
+                        "secondary-fixed": "#ffdad3",
+                        "tertiary-fixed": "#e6e2e0",
+                        "on-primary-fixed": "#1b1c1c",
+                        "on-secondary-container": "#6c1000",
+                        "inverse-on-surface": "#f0f1f1",
+                        "outline-variant": "#c4c7c7",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed-dim": "#c8c6c5",
+                        "outline": "#747878",
+                        "tertiary-fixed-dim": "#c9c6c4"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "margin-desktop": "64px",
+                        "margin-mobile": "20px",
+                        "container-max": "1280px",
+                        "unit": "4px"
+                    },
+                    "fontFamily": {
+                        "code-sm": ["Geist Mono"],
+                        "body-md": ["Manrope"],
+                        "label-caps": ["Geist Mono"],
+                        "display-lg": ["Manrope"],
+                        "display-lg-mobile": ["Manrope"],
+                        "headline-md": ["Manrope"],
+                        "body-lg": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "code-sm": ["13px", { "lineHeight": "1.4", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "label-caps": ["11px", { "lineHeight": "1.0", "letterSpacing": "0.1em", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "700" }],
+                        "display-lg-mobile": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }]
+                    },
+                    "backgroundImage": {
+                        'micro-dots': 'radial-gradient(circle, #0a0a0a 1px, transparent 1px)',
+                    },
+                    "backgroundSize": {
+                        'micro-dots': '16px 16px',
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: theme('colors.background');
+            color: theme('colors.on-background');
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        .micro-grid-bg {
+            background-image: radial-gradient(circle, rgba(10, 10, 10, 0.1) 1px, transparent 1px);
+            background-size: 16px 16px;
+        }
+        
+        .hairline-border {
+            border-color: rgba(10, 10, 10, 0.1);
+        }
+        
+        .service-card {
+            transition: all 0.3s ease;
+        }
+        
+        .service-card:hover .service-numeral {
+            color: theme('colors.secondary');
+            transform: translateX(8px);
+        }
+        
+        .service-numeral {
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col pt-16 relative">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-surface/80 dark:bg-surface/80 backdrop-blur-md border-b border-on-surface/10 dark:border-on-surface-variant/20 flat no shadows">
+<div class="flex justify-between items-center h-16 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+<a class="font-headline-md text-headline-md font-bold tracking-tighter text-primary dark:text-primary-fixed" href="#">ARCHITECT.AI</a>
+<div class="hidden md:flex space-x-8 items-center">
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-on-surface-variant/70 hover:text-secondary dark:hover:text-secondary-container transition-colors duration-200" href="#">Expertise</a>
+<a class="font-body-md text-body-md text-primary dark:text-primary-fixed border-b border-secondary dark:border-secondary-container pb-1 opacity-80 scale-95 transition-all" href="#">Services</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-on-surface-variant/70 hover:text-secondary dark:hover:text-secondary-container transition-colors duration-200" href="#">Experience</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-on-surface-variant/70 hover:text-secondary dark:hover:text-secondary-container transition-colors duration-200" href="#">Education</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-on-surface-variant/70 hover:text-secondary dark:hover:text-secondary-container transition-colors duration-200" href="#">Projects</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-on-surface-variant/70 hover:text-secondary dark:hover:text-secondary-container transition-colors duration-200" href="#">Contact</a>
+</div>
+<button class="hidden md:flex items-center justify-center bg-primary text-on-primary font-body-md text-body-md px-6 py-2 hover:bg-primary/90 transition-colors">
+                Inquire
+            </button>
+<button class="md:hidden flex items-center text-primary">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-grow micro-grid-bg relative z-10">
+<!-- Header Section -->
+<section class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop pt-24 pb-16 border-b hairline-border border-solid border-l border-r">
+<div class="grid grid-cols-4 md:grid-cols-12 gap-gutter">
+<div class="col-span-4 md:col-span-8">
+<span class="font-code-sm text-code-sm text-on-surface-variant block mb-4 uppercase tracking-widest">Core Capabilities</span>
+<h1 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-primary mb-6">
+                        Architecting digital futures through precise engineering and intelligent design.
+                    </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
+                        Our services are structured to provide end-to-end technical excellence, from generative AI integration to scalable full-stack deployments. We build systems that perform under pressure.
+                    </p>
+</div>
+</div>
+</section>
+<!-- Services Grid -->
+<section class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-16 border-l border-r hairline-border border-solid bg-surface-container-lowest">
+<!-- Service 01 -->
+<div class="service-card border-b hairline-border border-solid pb-16 mb-16 last:mb-0 last:border-b-0 last:pb-0 grid grid-cols-4 md:grid-cols-12 gap-gutter items-start">
+<div class="col-span-4 md:col-span-3">
+<span class="font-display-lg text-display-lg text-surface-dim service-numeral block">01</span>
+</div>
+<div class="col-span-4 md:col-span-9 grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<div>
+<h2 class="font-headline-md text-headline-md text-primary mb-4">AI Solutions</h2>
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="bg-primary/5 px-3 py-1 font-code-sm text-code-sm text-on-surface rounded-sm">Generative AI</span>
+<span class="bg-primary/5 px-3 py-1 font-code-sm text-code-sm text-on-surface rounded-sm">LLM Integration</span>
+<span class="bg-primary/5 px-3 py-1 font-code-sm text-code-sm text-on-surface rounded-sm">RAG Systems</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-8">
+                            We architect custom AI solutions tailored to your operational needs. From integrating foundational LLMs into existing workflows to building specialized Generative AI agents, our approach ensures data privacy, reduced latency, and scalable infrastructure.
+                        </p>
+<button class="bg-secondary text-on-secondary font-body-md text-body-md px-6 py-3 hover:bg-secondary/90 transition-colors inline-flex items-center gap-2">
+                            Discuss Project
+                            <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+<div class="hidden md:block relative border hairline-border border-solid p-2 h-full min-h-[300px]">
+<div class="absolute inset-2 micro-grid-bg border hairline-border border-solid flex items-center justify-center overflow-hidden">
+<img class="object-cover w-full h-full opacity-80 mix-blend-multiply" data-alt="A highly technical visualization of an AI neural network processing data streams, presented in a minimalist, high-key light mode aesthetic. The background is pristine white with 1px graphite grid lines. The neural nodes glow with a subtle signal coral accent against pure black connecting lines. The overall mood is sophisticated, architectural, and precise." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVnR2O2Ottn4u6Rl2FloEo-egWufCYlmWBUSHI6zSxZw2IKbG4Ro_7n17TJVAFyVEd9IMFxRurZml220lKRjJts-GQn7NltK95YA-2dsEM5Xi5bHlzXbsHSV8RZ6m8_SBz3DgyblfxOuHQ9hRda7AOEf3qu-rD3ZStWsexYpvsdiSzXXTntLQeg5sOhStptNBsz_oIyAOKnHNxuVpdKkqYMd8EXjdIeV07CiYWmSlYvpdRCAiPJVGlcQ"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Service 02 -->
+<div class="service-card border-b hairline-border border-solid pb-16 mb-16 last:mb-0 last:border-b-0 last:pb-0 grid grid-cols-4 md:grid-cols-12 gap-gutter items-start">
+<div class="col-span-4 md:col-span-3">
+<span class="font-display-lg text-display-lg text-surface-dim service-numeral block">02</span>
+</div>
+<div class="col-span-4 md:col-span-9 grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<div>
+<h2 class="font-headline-md text-headline-md text-primary mb-4">Full-Stack Development</h2>
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="bg-primary/5 px-3 py-1 font-code-sm text-code-sm text-on-surface rounded-sm">Custom Web Apps</span>
+<span class="bg-primary/5 px-3 py-1 font-code-sm text-code-sm text-on-surface rounded-sm">Mobile Applications</span>
+<span class="bg-primary/5 px-3 py-1 font-code-sm text-code-sm text-on-surface rounded-sm">Cloud Architecture</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-8">
+                            Engineering robust, scalable applications from the database to the DOM. We construct high-performance digital products utilizing modern frameworks, ensuring absolute clarity in code structure and seamless user experiences across all devices.
+                        </p>
+<button class="border border-outline/20 text-primary font-body-md text-body-md px-6 py-3 hover:bg-surface-container transition-colors inline-flex items-center gap-2">
+                            Discuss Project
+                            <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+<div class="hidden md:block relative border hairline-border border-solid p-2 h-full min-h-[300px]">
+<div class="absolute inset-2 bg-surface flex flex-col justify-between p-6 border hairline-border border-solid">
+<div class="w-full h-2 bg-surface-container-high mb-4"></div>
+<div class="w-3/4 h-2 bg-surface-container-high mb-4"></div>
+<div class="w-1/2 h-2 bg-surface-container-high mb-auto"></div>
+<div class="flex justify-between items-end mt-8">
+<div class="w-16 h-16 bg-primary"></div>
+<div class="w-12 h-12 bg-surface-container-highest rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Service 03 -->
+<div class="service-card grid grid-cols-4 md:grid-cols-12 gap-gutter items-start">
+<div class="col-span-4 md:col-span-3">
+<span class="font-display-lg text-display-lg text-surface-dim service-numeral block">03</span>
+</div>
+<div class="col-span-4 md:col-span-9 grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<div>
+<h2 class="font-headline-md text-headline-md text-primary mb-4">Digital Strategy</h2>
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="bg-primary/5 px-3 py-1 font-code-sm text-code-sm text-on-surface rounded-sm">SEO Architecture</span>
+<span class="bg-primary/5 px-3 py-1 font-code-sm text-code-sm text-on-surface rounded-sm">Data Analytics</span>
+<span class="bg-primary/5 px-3 py-1 font-code-sm text-code-sm text-on-surface rounded-sm">Performance Audits</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-8">
+                            Transforming raw data into structural insight. We develop comprehensive digital strategies driven by analytics, optimizing search visibility, and engineering conversion pathways that maximize your digital asset's return on investment.
+                        </p>
+<button class="border border-outline/20 text-primary font-body-md text-body-md px-6 py-3 hover:bg-surface-container transition-colors inline-flex items-center gap-2">
+                            Discuss Project
+                            <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+<div class="hidden md:block relative border hairline-border border-solid p-2 h-full min-h-[300px]">
+<div class="absolute inset-2 micro-grid-bg border hairline-border border-solid flex items-end p-6 gap-2">
+<div class="w-1/4 h-1/3 bg-surface-container-highest border hairline-border border-solid"></div>
+<div class="w-1/4 h-2/3 bg-surface-container-highest border hairline-border border-solid"></div>
+<div class="w-1/4 h-1/2 bg-surface-container-highest border hairline-border border-solid"></div>
+<div class="w-1/4 h-full bg-secondary opacity-80 border border-secondary border-solid relative">
+<div class="absolute top-0 left-0 w-full h-1 bg-primary"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface dark:bg-surface border-t border-on-surface/10 dark:border-on-surface-variant/20 flat no shadows w-full z-10 relative">
+<div class="flex flex-col md:flex-row justify-between items-center py-8 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto gap-4">
+<span class="font-headline-md text-headline-md text-primary">ARCHITECT.AI</span>
+<div class="flex space-x-6 items-center">
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-secondary dark:hover:text-secondary-container transition-colors" href="#">Privacy Policy</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-secondary dark:hover:text-secondary-container transition-colors" href="#">Terms of Service</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-secondary dark:hover:text-secondary-container transition-colors" href="#">LinkedIn</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-secondary dark:hover:text-secondary-container transition-colors" href="#">GitHub</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-secondary dark:hover:text-secondary-container transition-colors" href="#">X</a>
+</div>
+<span class="font-code-sm text-code-sm text-on-surface dark:text-on-surface">© 2024 ARCHITECT.AI — ALL RIGHTS RESERVED</span>
+</div>
+</footer>
+</body></html>

@@ -12,7 +12,8 @@
     {
       "binding": "DB",
       "database_name": "techily-fly-db",
-      "database_id": "d0dda1d3-cca7-4c98-a169-6fbb20340973"
+      "database_id": "d0dda1d3-cca7-4c98-a169-6fbb20340973",
+      "migrations_dir": "drizzle"
     }
   ],
   "assets": {

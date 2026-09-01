@@ -46,3 +46,17 @@ export const tags = sqliteTable("tags", {
   slug: text("slug").notNull().unique(),
   name: text("name").notNull(),
 });
+
+export const inquiries = sqliteTable("inquiries", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  company: text("company"),
+  projectType: text("project_type"),
+  budget: text("budget"),
+  timeline: text("timeline"),
+  source: text("source"),
+  message: text("message").notNull(),
+  status: text("status").default("unread"),
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+});
