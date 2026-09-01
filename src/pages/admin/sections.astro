@@ -27,9 +27,29 @@ if (Astro.request.method === 'POST') {
   try {
     const data = await Astro.request.formData();
     const sectionId = data.get('id') as string;
+    const sectionType = data.get('section_type') as string;
     const title = data.get('title') as string;
-    const content = data.get('content') as string;
     const isActive = data.get('isActive') === 'on';
+
+    let content = '';
+
+    if (sectionType === 'hero') {
+      content = JSON.stringify({
+        heading: data.get('hero_heading') as string,
+        subheading: data.get('hero_subheading') as string,
+        imageUrl: data.get('hero_image_url') as string,
+        badge: data.get('hero_badge') as string,
+      });
+    } else if (sectionType === 'about') {
+      content = JSON.stringify({
+        heading: data.get('about_heading') as string,
+        imageUrl: data.get('about_image_url') as string,
+        text: data.get('about_text') as string,
+      });
+    } else {
+      // Fallback for others (Experience, Projects) if not updated yet
+      content = data.get('content') as string;
+    }
 
     if (sectionId) {
       await db.update(sections)
@@ -65,21 +85,73 @@ if (Astro.request.method === 'POST') {
         
         <form method="POST" class="space-y-6">
           <input type="hidden" name="id" value={sec.id} />
+          <input type="hidden" name="section_type" value={sec.sectionId} />
           
           <div>
-            <label class="block text-sm font-bold text-gray-700 mb-2">Section Title</label>
+            <label class="block text-sm font-bold text-gray-700 mb-2">Section Title (Internal)</label>
             <input type="text" name="title" value={sec.title} class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-signal-coral focus:border-transparent outline-none transition-all font-medium" />
           </div>
 
-          <div>
-            <label class="block text-sm font-bold text-gray-700 mb-2 flex justify-between">
-              <span>Content Data</span>
-              <span class="text-xs text-gray-400 font-normal bg-gray-100 px-2 py-0.5 rounded">JSON / Text</span>
-            </label>
-            <textarea name="content" rows="6" class="w-full px-4 py-3 bg-gray-900 text-gray-100 border border-gray-200 rounded-xl font-mono text-sm focus:ring-2 focus:ring-signal-coral focus:border-transparent outline-none transition-all leading-relaxed">{sec.content}</textarea>
+          <div class="pt-2 border-t border-gray-100 mt-6">
+            <h4 class="text-sm font-bold text-tf-graphite mb-4 uppercase tracking-wider">Content Settings</h4>
+            
+            {(() => {
+              let parsed: any = {};
+              try { parsed = JSON.parse(sec.content || '{}'); } catch(e){}
+
+              if (sec.sectionId === 'hero') {
+                return (
+                  <div class="space-y-5">
+                    <div>
+                      <label class="block text-sm font-bold text-gray-700 mb-2">Heading (HTML Allowed)</label>
+                      <textarea name="hero_heading" rows="3" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-signal-coral focus:border-transparent outline-none transition-all font-medium" placeholder="Salaam, I'm <br><span class='text-signal-coral'>AbdurRahman.</span>">{parsed.heading || ''}</textarea>
+                    </div>
+                    <div>
+                      <label class="block text-sm font-bold text-gray-700 mb-2">Subheading</label>
+                      <textarea name="hero_subheading" rows="3" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-signal-coral focus:border-transparent outline-none transition-all font-medium" placeholder="A multi-disciplinary Generative AI Engineer...">{parsed.subheading || ''}</textarea>
+                    </div>
+                    <div>
+                      <label class="block text-sm font-bold text-gray-700 mb-2">Profile Image URL</label>
+                      <input type="url" name="hero_image_url" value={parsed.imageUrl || ''} class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-signal-coral focus:border-transparent outline-none transition-all font-medium" placeholder="https://..." />
+                    </div>
+                    <div>
+                      <label class="block text-sm font-bold text-gray-700 mb-2">Status Badge</label>
+                      <input type="text" name="hero_badge" value={parsed.badge || ''} class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-signal-coral focus:border-transparent outline-none transition-all font-medium" placeholder="Available for new opportunities" />
+                    </div>
+                  </div>
+                );
+              } else if (sec.sectionId === 'about') {
+                return (
+                  <div class="space-y-5">
+                    <div>
+                      <label class="block text-sm font-bold text-gray-700 mb-2">Heading (HTML Allowed)</label>
+                      <textarea name="about_heading" rows="3" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-signal-coral focus:border-transparent outline-none transition-all font-medium" placeholder="Transforming Ideas into...">{parsed.heading || ''}</textarea>
+                    </div>
+                    <div>
+                      <label class="block text-sm font-bold text-gray-700 mb-2">Image URL</label>
+                      <input type="url" name="about_image_url" value={parsed.imageUrl || ''} class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-signal-coral focus:border-transparent outline-none transition-all font-medium" placeholder="https://..." />
+                    </div>
+                    <div>
+                      <label class="block text-sm font-bold text-gray-700 mb-2">About Content (Markdown/Text)</label>
+                      <textarea name="about_text" rows="8" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-signal-coral focus:border-transparent outline-none transition-all font-medium leading-relaxed" placeholder="Passionate developer...">{parsed.text || ''}</textarea>
+                    </div>
+                  </div>
+                );
+              } else {
+                return (
+                  <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2 flex justify-between">
+                      <span>Raw Data</span>
+                      <span class="text-xs text-gray-400 font-normal bg-gray-100 px-2 py-0.5 rounded">JSON</span>
+                    </label>
+                    <textarea name="content" rows="6" class="w-full px-4 py-3 bg-gray-900 text-gray-100 border border-gray-200 rounded-xl font-mono text-sm focus:ring-2 focus:ring-signal-coral focus:border-transparent outline-none transition-all leading-relaxed">{sec.content}</textarea>
+                  </div>
+                );
+              }
+            })()}
           </div>
 
-          <div class="flex items-center gap-3 bg-gray-50 p-4 rounded-xl border border-gray-100">
+          <div class="flex items-center gap-3 bg-gray-50 p-4 rounded-xl border border-gray-100 mt-6">
             <input type="checkbox" name="isActive" id={`active-${sec.id}`} checked={sec.isActive ?? false} class="w-5 h-5 text-signal-coral rounded focus:ring-signal-coral border-gray-300" />
             <label for={`active-${sec.id}`} class="text-sm font-bold text-gray-700 cursor-pointer select-none">Is Active (Visible on site)</label>
           </div>

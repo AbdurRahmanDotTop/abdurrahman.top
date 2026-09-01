@@ -1,4 +1,29 @@
 ---
+import { eq } from 'drizzle-orm';
+import { getDb } from '../db';
+import { sections } from '../db/schema';
+import { env } from "cloudflare:workers";
+
+const db = getDb(env.DB);
+
+// Fetch About Content
+const aboutSectionRows = await db.select().from(sections).where(eq(sections.sectionId, 'about')).limit(1);
+let aboutData = {
+  heading: "Transforming Ideas into <br class=\"hidden md:block\" />\n<span class=\"text-signal-coral\">Digital Reality.</span>",
+  text: "I am a technologist specializing in Generative AI, full-stack web & app development, and digital marketing. With deep expertise in Python, Kotlin, PHP, and modern web frameworks, I architect solutions that solve real business problems.\n\nMy approach blends rigorous engineering with intuitive design, ensuring every product is not only robust but also a joy to use.",
+  imageUrl: "https://yt3.googleusercontent.com/fIJ3r6a8JcUGXA7uEIvGopioT1m5VqF_srMy8_xgTAhkeHH4h7qw6yfjHqXfvNf7vsOSeVCy97E=s900-c-k-c0x00ffffff-no-rj",
+};
+
+if (aboutSectionRows.length > 0 && aboutSectionRows[0].isActive !== false) {
+  try {
+    const parsed = JSON.parse(aboutSectionRows[0].content);
+    if (parsed.heading) aboutData.heading = parsed.heading;
+    if (parsed.text) aboutData.text = parsed.text;
+    if (parsed.imageUrl) aboutData.imageUrl = parsed.imageUrl;
+  } catch(e) {}
+}
+
+const paragraphs = aboutData.text.split('\n').filter(p => p.trim() !== '');
 ---
 <section id="about" class="py-20 lg:py-32 bg-white relative overflow-hidden border-t border-gray-100">
   <div class="max-w-7xl mx-auto px-4 md:px-6">
@@ -8,8 +33,8 @@
       <div class="lg:col-span-5 space-y-12">
         <div class="relative group max-w-sm mx-auto lg:max-w-none">
           <div class="absolute inset-0 bg-signal-coral/5 rounded-3xl -rotate-3 scale-105 transition-transform duration-700 group-hover:rotate-0"></div>
-          <!-- Profile image moved from Hero -->
-          <img src="https://yt3.googleusercontent.com/fIJ3r6a8JcUGXA7uEIvGopioT1m5VqF_srMy8_xgTAhkeHH4h7qw6yfjHqXfvNf7vsOSeVCy97E=s900-c-k-c0x00ffffff-no-rj" alt="AbdurRahman Md Ghufran" class="relative rounded-3xl w-full h-auto aspect-[4/5] object-cover shadow-2xl shadow-tf-graphite/5" />
+          
+          <img src={aboutData.imageUrl} alt="Profile" class="relative rounded-3xl w-full h-auto aspect-[4/5] object-cover shadow-2xl shadow-tf-graphite/5" />
           
           <!-- Floating badge -->
           <div class="absolute -bottom-4 -right-4 md:-bottom-6 md:-right-6 bg-white p-4 md:p-5 rounded-2xl shadow-xl shadow-tf-graphite/10 border border-gray-100 animate-float">
@@ -22,18 +47,12 @@
       <!-- Right side: Typography & Bio -->
       <div class="lg:col-span-7 space-y-10 lg:space-y-12 lg:pt-12">
         <div>
-          <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold text-tf-graphite tracking-tight leading-tight mb-6 md:mb-8 text-center lg:text-left">
-            Transforming Ideas into <br class="hidden md:block" />
-            <span class="text-signal-coral">Digital Reality.</span>
-          </h2>
+          <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold text-tf-graphite tracking-tight leading-tight mb-6 md:mb-8 text-center lg:text-left" set:html={aboutData.heading}></h2>
           
           <div class="space-y-6 text-gray-500 leading-relaxed text-base md:text-lg lg:text-xl font-medium text-center lg:text-left">
-            <p>
-              I am a technologist specializing in Generative AI, full-stack web & app development, and digital marketing. With deep expertise in Python, Kotlin, PHP, and modern web frameworks, I architect solutions that solve real business problems.
-            </p>
-            <p>
-              My approach blends rigorous engineering with intuitive design, ensuring every product is not only robust but also a joy to use.
-            </p>
+            {paragraphs.map(p => (
+              <p>{p}</p>
+            ))}
           </div>
         </div>
 
