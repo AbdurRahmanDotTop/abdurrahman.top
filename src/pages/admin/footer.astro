@@ -1,0 +1,279 @@
+---
+export const prerender = false;
+
+import { eq, asc, notInArray } from 'drizzle-orm';
+import { getDb } from '../../db';
+import { footerLinks, siteSettings } from '../../db/schema';
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { env } from "cloudflare:workers";
+
+const db = getDb(env.DB);
+let message = '';
+let messageType = 'success';
+
+if (Astro.request.method === 'POST') {
+  try {
+    const data = await Astro.request.formData();
+    const action = data.get('action') as string;
+
+    if (action === 'save_footer_settings') {
+      const footerLogo = (data.get('footer_logo') as string) || '';
+      const footerDesc = (data.get('footer_desc') as string) || '';
+
+      const settingsToSave = [
+        { key: 'footer_logo', value: footerLogo },
+        { key: 'footer_desc', value: footerDesc }
+      ];
+
+      for (const setting of settingsToSave) {
+        const existing = await db.select().from(siteSettings).where(eq(siteSettings.key, setting.key));
+        if (existing.length > 0) {
+          await db.update(siteSettings).set({ value: setting.value }).where(eq(siteSettings.key, setting.key));
+        } else {
+          await db.insert(siteSettings).values({ id: crypto.randomUUID(), key: setting.key, value: setting.value });
+        }
+      }
+      message = 'Footer settings saved successfully.';
+      messageType = 'success';
+      
+    } else if (action === 'save_footer_links') {
+      const linksJson = data.get('links_json') as string;
+      const parsedLinks = JSON.parse(linksJson);
+
+      const incomingIds = parsedLinks.map((m: any) => m.id).filter(Boolean);
+
+      // Delete links that are not in the incoming payload
+      if (incomingIds.length > 0) {
+        await db.delete(footerLinks).where(notInArray(footerLinks.id, incomingIds));
+      } else {
+        await db.delete(footerLinks);
+      }
+
+      // Upsert links
+      for (const m of parsedLinks) {
+        if (!m.id) {
+          m.id = crypto.randomUUID();
+        }
+        
+        const existing = await db.select().from(footerLinks).where(eq(footerLinks.id, m.id)).limit(1);
+        if (existing.length > 0) {
+          await db.update(footerLinks)
+            .set({
+              title: m.title,
+              url: m.url,
+              section: m.section || 'Legal',
+              order: parseInt(m.order) || 0,
+              isActive: m.isActive
+            })
+            .where(eq(footerLinks.id, m.id));
+        } else {
+          await db.insert(footerLinks).values({
+            id: m.id,
+            title: m.title,
+            url: m.url,
+            section: m.section || 'Legal',
+            order: parseInt(m.order) || 0,
+            isActive: m.isActive
+          });
+        }
+      }
+
+      message = 'Footer links updated successfully.';
+      messageType = 'success';
+    }
+  } catch (e: any) {
+    message = e.message || 'Error processing request.';
+    messageType = 'error';
+  }
+}
+
+// Fetch current settings
+const allSettings = await db.select().from(siteSettings);
+const settingsMap = allSettings.reduce((acc, curr) => {
+  acc[curr.key] = curr.value;
+  return acc;
+}, {} as Record<string, string>);
+
+const currentFooterLogo = settingsMap['footer_logo'] || '/logo-dark.png';
+const currentFooterDesc = settingsMap['footer_desc'] || 'Generative AI Engineer, Full-Stack Developer & Founder of Techily Fly.';
+
+// Fetch current links
+let allFooterLinks = await db.select().from(footerLinks).orderBy(asc(footerLinks.order));
+
+// Seed defaults if empty
+if (allFooterLinks.length === 0) {
+  const defaultLinks = [
+    { id: crypto.randomUUID(), title: 'Privacy Policy', url: '/privacy-policy', section: 'Legal', order: 10, isActive: true },
+    { id: crypto.randomUUID(), title: 'Terms', url: '/terms-conditions', section: 'Legal', order: 20, isActive: true },
+    { id: crypto.randomUUID(), title: 'Disclaimer', url: '/disclaimer', section: 'Legal', order: 30, isActive: true },
+    { id: crypto.randomUUID(), title: 'Admin Login', url: '/admin/login', section: 'Legal', order: 40, isActive: true }
+  ];
+  await db.insert(footerLinks).values(defaultLinks);
+  allFooterLinks = await db.select().from(footerLinks).orderBy(asc(footerLinks.order));
+}
+---
+
+<AdminLayout title="Manage Footer" currentPath="/admin/footer">
+  <header class="mb-8">
+    <h1 class="text-3xl font-bold">Manage Footer</h1>
+    <p class="text-gray-500 mt-2">Manage your footer branding, description, and important links.</p>
+  </header>
+
+  {message && (
+    <div class={`mb-6 p-4 rounded-xl font-medium border ${messageType === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-red-50 text-red-700 border-red-100'}`}>
+      {message}
+    </div>
+  )}
+
+  <div class="grid grid-cols-1 xl:grid-cols-3 gap-8 mb-8">
+    
+    <!-- Global Footer Details -->
+    <div class="col-span-1 bg-white p-6 md:p-8 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100/60 h-fit">
+      <h3 class="text-xl font-bold mb-6 flex items-center gap-2">
+        <svg class="w-5 h-5 text-signal-coral" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+        Footer Branding
+      </h3>
+      <form method="POST" class="space-y-5">
+        <input type="hidden" name="action" value="save_footer_settings" />
+        
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-2">Footer Logo URL</label>
+          <input type="text" name="footer_logo" value={currentFooterLogo} placeholder="/logo-dark.png" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-signal-coral outline-none transition-all font-medium text-sm" />
+          <p class="text-xs text-gray-400 mt-2">URL or absolute path to your footer logo image.</p>
+        </div>
+
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-2">Footer Description</label>
+          <textarea name="footer_desc" rows="4" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-signal-coral outline-none transition-all text-sm resize-none" placeholder="Short description about you or your company...">{currentFooterDesc}</textarea>
+        </div>
+
+        <button type="submit" class="w-full px-6 py-3 bg-tf-graphite text-white font-bold rounded-xl hover:bg-black transition-colors flex items-center justify-center gap-2 shadow-lg shadow-black/10">
+          Save Branding
+        </button>
+      </form>
+    </div>
+
+    <!-- Footer Links CRUD -->
+    <div class="col-span-1 xl:col-span-2 bg-white p-6 md:p-8 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100/60" 
+         x-data={`{ 
+           links: JSON.parse($el.dataset.links || '[]'),
+           addLink() {
+             this.links.push({
+               id: crypto.randomUUID(),
+               title: 'New Link',
+               url: '#',
+               section: 'Legal',
+               order: (this.links.length + 1) * 10,
+               isActive: true
+             });
+           },
+           removeLink(id) {
+             this.links = this.links.filter(l => l.id !== id);
+           },
+           moveUp(index) {
+             if (index > 0) {
+               const temp = this.links[index];
+               this.links[index] = this.links[index - 1];
+               this.links[index - 1] = temp;
+               this.updateOrder();
+             }
+           },
+           moveDown(index) {
+             if (index < this.links.length - 1) {
+               const temp = this.links[index];
+               this.links[index] = this.links[index + 1];
+               this.links[index + 1] = temp;
+               this.updateOrder();
+             }
+           },
+           updateOrder() {
+             this.links.forEach((l, idx) => { l.order = (idx + 1) * 10; });
+           }
+         }`} 
+         data-links={JSON.stringify(allFooterLinks)}>
+      
+      <div class="flex justify-between items-center mb-6">
+          <h3 class="text-xl font-bold flex items-center gap-2">
+            <svg class="w-5 h-5 text-signal-coral" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+            Important Links
+          </h3>
+          <button type="button" @click="addLink()" class="px-4 py-2 bg-tf-graphite text-white text-sm font-bold tracking-wide rounded-lg hover:bg-signal-coral transition-colors flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+              Add Link
+          </button>
+      </div>
+
+      <form method="POST">
+        <input type="hidden" name="action" value="save_footer_links" />
+        <input type="hidden" name="links_json" :value="JSON.stringify(links)" />
+
+        <div class="space-y-4 mb-8 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+          <template x-for="(link, index) in links" :key="link.id">
+            <div class="p-4 border border-gray-200 rounded-xl bg-gray-50/50 flex flex-col md:flex-row gap-4 items-start md:items-center relative transition-all">
+              
+              <!-- Controls -->
+              <div class="flex flex-col gap-1 items-center shrink-0">
+                  <button type="button" @click="moveUp(index)" class="p-1 text-gray-400 hover:text-signal-coral disabled:opacity-30" :disabled="index === 0">
+                      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7" /></svg>
+                  </button>
+                  <button type="button" @click="moveDown(index)" class="p-1 text-gray-400 hover:text-signal-coral disabled:opacity-30" :disabled="index === links.length - 1">
+                      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" /></svg>
+                  </button>
+              </div>
+
+              <!-- Fields -->
+              <div class="flex-1 grid grid-cols-1 md:grid-cols-12 gap-3 w-full">
+                  <div class="col-span-3">
+                      <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Title</label>
+                      <input type="text" x-model="link.title" class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-signal-coral outline-none transition-all text-sm font-medium" />
+                  </div>
+                  <div class="col-span-4">
+                      <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">URL / Link</label>
+                      <input type="text" x-model="link.url" class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-signal-coral outline-none transition-all text-sm font-medium" />
+                  </div>
+                  <div class="col-span-3">
+                      <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Section</label>
+                      <input type="text" x-model="link.section" placeholder="e.g. Legal, Resources" class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-signal-coral outline-none transition-all text-sm font-medium" />
+                  </div>
+                  <div class="col-span-2 flex items-center justify-between gap-2 mt-4 md:mt-0 pt-2">
+                      <label class="flex items-center gap-1.5 cursor-pointer">
+                          <input type="checkbox" x-model="link.isActive" class="w-4 h-4 text-signal-coral focus:ring-signal-coral border-gray-300 rounded" />
+                          <span class="text-xs font-bold text-gray-700">Active</span>
+                      </label>
+                      <button type="button" @click="removeLink(link.id)" class="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Delete Link">
+                          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                      </button>
+                  </div>
+              </div>
+            </div>
+          </template>
+          
+          <div x-show="links.length === 0" class="text-center py-10 bg-gray-50 rounded-xl border border-gray-200 border-dashed">
+              <p class="text-gray-500 font-medium">No links found. Click "Add Link" to create one.</p>
+          </div>
+        </div>
+
+        <div class="flex justify-end">
+          <button type="submit" class="px-6 py-3 bg-signal-coral text-white font-bold tracking-wide rounded-xl hover:bg-red-500 transition-colors shadow-lg shadow-signal-coral/20 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+            Save All Links
+          </button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</AdminLayout>
+
+<style>
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #e5e7eb;
+    border-radius: 10px;
+  }
+</style>

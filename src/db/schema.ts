@@ -80,3 +80,12 @@ export const menus = sqliteTable("menus", {
   order: integer("order").default(0),
   isActive: integer("is_active", { mode: "boolean" }).default(true),
 });
+
+export const footerLinks = sqliteTable("footer_links", {
+  id: text("id").primaryKey(),
+  title: text("title").notNull(),
+  url: text("url").notNull(),
+  section: text("section").default("Legal"), // E.g., 'Legal', 'Resources'
+  order: integer("order").default(0),
+  isActive: integer("is_active", { mode: "boolean" }).default(true),
+});

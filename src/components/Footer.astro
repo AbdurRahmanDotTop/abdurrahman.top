@@ -1,0 +1,103 @@
+---
+import { eq, asc } from 'drizzle-orm';
+import { getDb } from '../db';
+import { siteSettings, socialLinks, footerLinks } from '../db/schema';
+import { env } from 'cloudflare:workers';
+
+let footerLogo = '/logo-dark.png';
+let footerDesc = 'Generative AI Engineer, Full-Stack Developer & Founder of Techily Fly.';
+let contactEmail = 'Contact@AbdurRahman.Top';
+let activeSocials: any[] = [];
+let groupedLinks: Record<string, any[]> = {};
+
+try {
+  const db = getDb(env.DB);
+  
+  // 1. Fetch settings (Logo, Desc, Email)
+  const settingsDb = await db.select().from(siteSettings);
+  const settingsMap = settingsDb.reduce((acc, curr) => {
+    acc[curr.key] = curr.value;
+    return acc;
+  }, {} as Record<string, string>);
+  
+  if (settingsMap['footer_logo']) footerLogo = settingsMap['footer_logo'];
+  if (settingsMap['footer_desc']) footerDesc = settingsMap['footer_desc'];
+  if (settingsMap['contact_email']) contactEmail = settingsMap['contact_email'];
+
+  // 2. Fetch active social links
+  activeSocials = await db.select().from(socialLinks)
+    .where(eq(socialLinks.isActive, true));
+
+  // 3. Fetch active footer links and group by section
+  const allLinks = await db.select().from(footerLinks)
+    .where(eq(footerLinks.isActive, true))
+    .orderBy(asc(footerLinks.order));
+
+  allLinks.forEach(link => {
+    const sec = link.section || 'Links';
+    if (!groupedLinks[sec]) {
+      groupedLinks[sec] = [];
+    }
+    groupedLinks[sec].push(link);
+  });
+
+} catch (e) {
+  console.error("Failed to fetch footer data:", e);
+}
+---
+
+<footer class="bg-white border-t border-gray-100 py-16 mt-32 text-center">
+  <div class="max-w-5xl mx-auto px-6 flex flex-col items-center">
+    
+    <!-- Logo & Description -->
+    <a href="/" class="inline-block mb-6">
+      <img src={footerLogo} alt="Footer Logo" class="h-10 w-auto object-contain mx-auto" />
+    </a>
+    <p class="text-gray-500 font-medium leading-relaxed mb-12 max-w-lg mx-auto">
+      {footerDesc}
+    </p>
+
+    <!-- Contact & Socials -->
+    <div class="mb-12 w-full max-w-2xl">
+      <h4 class="font-bold mb-6 text-tf-graphite text-xs tracking-widest uppercase font-mono">Connect With Me</h4>
+      <div class="flex flex-wrap items-center justify-center gap-4 md:gap-6">
+         <!-- Email -->
+         <a href={`mailto:${contactEmail}`} class="flex items-center gap-2 px-4 py-2 bg-gray-50 border border-gray-100 rounded-full text-gray-500 hover:text-signal-coral hover:bg-red-50 hover:border-red-100 transition-all text-sm font-semibold">
+           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+           {contactEmail}
+         </a>
+         
+         <!-- Social Icons -->
+         {activeSocials.map(link => (
+            <a href={link.url} target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 px-4 py-2 bg-gray-50 border border-gray-100 rounded-full text-gray-500 hover:text-signal-coral hover:bg-red-50 hover:border-red-100 transition-all text-sm font-semibold">
+              {link.icon && <div class="w-4 h-4" set:html={link.icon} />}
+              {link.platform}
+            </a>
+         ))}
+      </div>
+    </div>
+
+    <!-- Important Links (Grouped) -->
+    {Object.keys(groupedLinks).length > 0 && (
+      <div class="w-full flex flex-wrap justify-center gap-12 md:gap-24 mb-16">
+         {Object.keys(groupedLinks).map(section => (
+           <div class="min-w-[150px]">
+              <h4 class="font-bold mb-5 text-tf-graphite text-xs tracking-widest uppercase font-mono">{section}</h4>
+              <ul class="space-y-3 flex flex-col items-center">
+                {groupedLinks[section].map((link: any) => (
+                   <li><a href={link.url} class="text-gray-500 hover:text-signal-coral transition-colors text-sm font-semibold">{link.title}</a></li>
+                ))}
+              </ul>
+           </div>
+         ))}
+      </div>
+    )}
+
+    <!-- Copyright -->
+    <div class="w-full pt-8 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4 text-[13px] text-gray-400 font-semibold">
+      <p>&copy; {new Date().getFullYear()} AbdurRahman Dot Top. All rights reserved.</p>
+      <p class="flex items-center gap-1">Designed with <span class="text-signal-coral">&hearts;</span></p>
+    </div>
+    
+  </div>
+</footer>

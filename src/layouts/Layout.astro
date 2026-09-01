@@ -3,6 +3,7 @@ import '../styles/global.css';
 import Cursor from '../components/Cursor.astro';
 import BackToTop from '../components/BackToTop.astro';
 import TawkWidget from '../components/TawkWidget.astro';
+import Footer from '../components/Footer.astro';
 
 import { eq, asc } from 'drizzle-orm';
 import { getDb } from '../db';
@@ -234,73 +235,7 @@ const seoKeywords = globalSettings['seo_keywords'] || "ai, engineer, developer, 
       });
     </script>
 
-    <!-- Footer -->
-    <footer class="bg-white border-t border-gray-100 py-24 mt-32">
-      <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-8">
-        <div class="md:col-span-5 lg:col-span-4">
-          <a href="/" class="inline-block mb-6">
-            <img src="/logo-dark.png" alt="AbdurRahman Logo" class="h-10 w-auto object-contain" />
-          </a>
-          <p class="text-gray-500 font-medium leading-relaxed mb-8 max-w-sm">Generative AI Engineer, Full-Stack Developer & Founder of Techily Fly.</p>
-        </div>
-        <div class="md:col-span-7 lg:col-span-8 grid grid-cols-2 md:grid-cols-3 gap-8">
-          <div>
-            <h4 class="font-bold mb-6 text-tf-graphite text-xs tracking-widest uppercase font-mono">Navigation</h4>
-            <ul class="space-y-4">
-              {structuredMenus.map((menu) => (
-                <li>
-                  <a href={menu.url} class="text-gray-500 hover:text-signal-coral transition-colors text-sm font-semibold flex items-center gap-2">
-                    {menu.icon && <div class="w-4 h-4" set:html={menu.icon} />}
-                    {menu.title}
-                  </a>
-                  {menu.children.length > 0 && (
-                    <ul class="pl-4 mt-3 space-y-3 border-l border-gray-100">
-                      {menu.children.map((child: any) => (
-                        <li>
-                          <a href={child.url} class="text-gray-400 hover:text-signal-coral transition-colors text-sm font-semibold flex items-center gap-2">
-                            {child.icon && <div class="w-3 h-3" set:html={child.icon} />}
-                            {child.title}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <h4 class="font-bold mb-6 text-tf-graphite text-xs tracking-widest uppercase font-mono">Connect</h4>
-            <ul class="space-y-4">
-              <li><a href="mailto:Contact@AbdurRahman.Top" class="text-gray-500 hover:text-signal-coral transition-colors text-sm font-semibold">Email</a></li>
-              {activeSocialLinks.length > 0 ? (
-                activeSocialLinks.map(link => (
-                  <li><a href={link.url} target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-signal-coral transition-colors text-sm font-semibold">{link.platform}</a></li>
-                ))
-              ) : (
-                <>
-                  <li><a href="https://linkedin.com/in/abdurrahmandottop" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-signal-coral transition-colors text-sm font-semibold">LinkedIn</a></li>
-                  <li><a href="https://x.com/AbdurRahmanDotT" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-signal-coral transition-colors text-sm font-semibold">Twitter / X</a></li>
-                </>
-              )}
-            </ul>
-          </div>
-          <div class="col-span-2 md:col-span-1">
-            <h4 class="font-bold mb-6 text-tf-graphite text-xs tracking-widest uppercase font-mono">Legal</h4>
-            <ul class="space-y-4">
-              <li><a href="/privacy-policy" class="text-gray-500 hover:text-signal-coral transition-colors text-sm font-semibold">Privacy Policy</a></li>
-              <li><a href="/terms-conditions" class="text-gray-500 hover:text-signal-coral transition-colors text-sm font-semibold">Terms</a></li>
-              <li><a href="/disclaimer" class="text-gray-500 hover:text-signal-coral transition-colors text-sm font-semibold">Disclaimer</a></li>
-              <li><a href="/admin/login" class="text-gray-500 hover:text-signal-coral transition-colors text-sm font-semibold">Admin Login</a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-      <div class="max-w-7xl mx-auto px-6 mt-20 pt-8 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4 text-[13px] text-gray-400 font-semibold">
-        <p>&copy; {new Date().getFullYear()} AbdurRahman Dot Top. All rights reserved.</p>
-        <p class="flex items-center gap-1">Designed with <span class="text-signal-coral">&hearts;</span></p>
-      </div>
-    </footer>
+    <Footer />
 
     <!-- Right Side Social Bar -->
     <div class="hidden xl:flex fixed right-6 top-1/2 -translate-y-1/2 flex-col items-center gap-6 z-40">
