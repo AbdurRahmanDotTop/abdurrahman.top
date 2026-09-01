@@ -1,34 +1,37 @@
 ---
-const services = [
-  {
-    title: "AI Solutions & Automation",
-    description: "Integrate powerful Generative AI models into your business processes. From smart chatbots to automated content pipelines, I build AI-driven features that save time and cut costs.",
-    icon: `<svg class="w-5 h-5 md:w-6 md:h-6 text-tf-graphite group-hover:text-signal-coral transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>`,
-    colSpan: "md:col-span-8",
-    accent: "bg-signal-coral/5"
-  },
-  {
-    title: "Web & Mobile Development",
-    description: "End-to-end development for highly scalable platforms and native Android apps focusing on robust architecture.",
-    icon: `<svg class="w-5 h-5 md:w-6 md:h-6 text-tf-graphite group-hover:text-signal-coral transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>`,
-    colSpan: "md:col-span-4",
-    accent: "bg-tf-graphite/5"
-  },
-  {
-    title: "Digital Strategy & SEO",
-    description: "Data-driven SEO optimization and digital marketing strategies to help your product reach the right audience, generate leads, and boost organic conversions globally.",
-    icon: `<svg class="w-5 h-5 md:w-6 md:h-6 text-tf-graphite group-hover:text-signal-coral transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>`,
-    colSpan: "md:col-span-12",
-    accent: "bg-white"
+import { eq } from 'drizzle-orm';
+import { getDb } from '../db';
+import { sections } from '../db/schema';
+import { env } from "cloudflare:workers";
+
+const db = getDb(env.DB);
+const dbSection = await db.select().from(sections).where(eq(sections.sectionId, 'services')).limit(1);
+
+let servicesData = {
+  heading: "Specialized Services.",
+  subheading: "Delivering cutting-edge solutions across engineering, AI, and digital growth with an uncompromising focus on quality.",
+  items: [] as any[]
+};
+let isActive = true;
+
+if (dbSection.length > 0) {
+  isActive = dbSection[0].isActive ?? true;
+  if (dbSection[0].content) {
+    try {
+      servicesData = JSON.parse(dbSection[0].content);
+    } catch(e) {}
   }
-];
+}
+
+const services = servicesData.items || [];
 ---
+{isActive && (
 <section id="services" class="py-20 lg:py-32 bg-cloud-surface relative overflow-hidden">
   <div class="max-w-7xl mx-auto px-4 md:px-6">
     <div class="mb-12 md:mb-24 flex flex-col md:flex-row md:items-end justify-between gap-6 md:gap-8 text-center md:text-left">
       <div class="max-w-2xl mx-auto md:mx-0">
-        <h2 class="text-4xl md:text-5xl font-bold text-tf-graphite mb-4 md:mb-6 tracking-tight">Specialized Services.</h2>
-        <p class="text-gray-500 text-base md:text-xl font-medium leading-relaxed">Delivering cutting-edge solutions across engineering, AI, and digital growth with an uncompromising focus on quality.</p>
+        <h2 class="text-4xl md:text-5xl font-bold text-tf-graphite mb-4 md:mb-6 tracking-tight" set:html={servicesData.heading}></h2>
+        <p class="text-gray-500 text-base md:text-xl font-medium leading-relaxed" set:html={servicesData.subheading}></p>
       </div>
     </div>
 
@@ -50,3 +53,4 @@ const services = [
     </div>
   </div>
 </section>
+)}

@@ -1,37 +1,29 @@
 ---
-import { eq } from 'drizzle-orm';
-import { getDb } from '../db';
-import { sections } from '../db/schema';
-import { env } from "cloudflare:workers";
-
-const db = getDb(env.DB);
-const dbSection = await db.select().from(sections).where(eq(sections.sectionId, 'skills')).limit(1);
-
-let skillsData = {
-  heading: "Technical Arsenal.",
-  subheading: "The foundational technologies and frameworks I use to engineer robust digital products.",
-  categories: [] as any[]
-};
-let isActive = true;
-
-if (dbSection.length > 0) {
-  isActive = dbSection[0].isActive ?? true;
-  if (dbSection[0].content) {
-    try {
-      skillsData = JSON.parse(dbSection[0].content);
-    } catch(e) {}
+const skills = [
+  {
+    category: "Generative AI",
+    items: ["AI API Integration", "Prompt Engineering", "AI-Powered Apps", "Workflow Automation"]
+  },
+  {
+    category: "Full Stack",
+    items: ["PHP / Laravel", "React / Next.js", "JavaScript / TS", "Tailwind CSS"]
+  },
+  {
+    category: "Mobile",
+    items: ["Kotlin", "Android SDK", "REST APIs", "App Deployment"]
+  },
+  {
+    category: "Infrastructure",
+    items: ["MySQL", "D1 / Cloudflare", "Hostinger", "Git / CI/CD"]
   }
-}
-
-const skills = skillsData.categories || [];
+];
 ---
-{isActive && (
 <section id="skills" class="py-20 lg:py-32 bg-white relative overflow-hidden border-t border-gray-100">
   <div class="max-w-7xl mx-auto px-4 md:px-6">
     <div class="mb-12 md:mb-24 flex flex-col md:flex-row md:items-end justify-between gap-6 md:gap-8 text-center md:text-left">
       <div class="max-w-2xl mx-auto md:mx-0">
-        <h2 class="text-4xl md:text-5xl font-bold text-tf-graphite mb-4 md:mb-6 tracking-tight" set:html={skillsData.heading}></h2>
-        <p class="text-gray-500 text-base md:text-xl font-medium leading-relaxed" set:html={skillsData.subheading}></p>
+        <h2 class="text-4xl md:text-5xl font-bold text-tf-graphite mb-4 md:mb-6 tracking-tight">Technical Arsenal.</h2>
+        <p class="text-gray-500 text-base md:text-xl font-medium leading-relaxed">The foundational technologies and frameworks I use to engineer robust digital products.</p>
       </div>
     </div>
 
@@ -42,9 +34,9 @@ const skills = skillsData.categories || [];
             {skillGroup.category}
           </h3>
           <div class="flex flex-wrap gap-2 justify-center md:justify-start">
-            {(typeof skillGroup.items === 'string' ? skillGroup.items.split(',') : skillGroup.items || []).map((item: string) => (
+            {skillGroup.items.map((item) => (
               <span class="px-4 py-2 bg-cloud-surface hover:bg-white border border-transparent hover:border-gray-200 text-gray-600 hover:text-tf-graphite rounded-full text-[13px] font-semibold transition-all cursor-default">
-                {item.trim()}
+                {item}
               </span>
             ))}
           </div>
@@ -53,4 +45,3 @@ const skills = skillsData.categories || [];
     </div>
   </div>
 </section>
-)}

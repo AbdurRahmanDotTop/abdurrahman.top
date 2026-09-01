@@ -1,4 +1,6 @@
----
+import json
+
+astro_content = """---
 export const prerender = false;
 
 import { eq } from 'drizzle-orm';
@@ -16,11 +18,11 @@ const defaultData = [
     sectionId: 'hero', 
     title: 'Hero Section', 
     content: JSON.stringify({
-      heading: "Salaam, I'm <br />\n<span class=\"text-signal-coral\">AbdurRahman.</span>",
-      subheading: "A multi-disciplinary <strong class=\"text-tf-graphite font-semibold\">Generative AI Engineer</strong> and <strong class=\"text-tf-graphite font-semibold\">Full-Stack Developer</strong> building intelligent, scalable digital experiences.",
-      badge: "Available for new opportunities",
-      primaryButtonText: "Explore My Work",
-      primaryButtonLink: "#about"
+      heading: 'Salaam, I\\'m <br />\\n<span class="text-signal-coral">AbdurRahman.</span>',
+      subheading: 'A multi-disciplinary <strong class="text-tf-graphite font-semibold">Generative AI Engineer</strong> and <strong class="text-tf-graphite font-semibold">Full-Stack Developer</strong> building intelligent, scalable digital experiences.',
+      badge: 'Available for new opportunities',
+      primaryButtonText: 'Explore My Work',
+      primaryButtonLink: '#about'
     })
   },
   { 
@@ -28,8 +30,8 @@ const defaultData = [
     sectionId: 'about', 
     title: 'About Me', 
     content: JSON.stringify({
-      heading: 'Transforming Ideas into <br class="hidden md:block" />\n<span class="text-signal-coral">Digital Reality.</span>',
-      text: 'I am a technologist specializing in Generative AI, full-stack web & app development, and digital marketing. With deep expertise in Python, Kotlin, PHP, and modern web frameworks, I architect solutions that solve real business problems.\n\nMy approach blends rigorous engineering with intuitive design, ensuring every product is not only robust but also a joy to use.',
+      heading: 'Transforming Ideas into <br class="hidden md:block" />\\n<span class="text-signal-coral">Digital Reality.</span>',
+      text: 'I am a technologist specializing in Generative AI, full-stack web & app development, and digital marketing. With deep expertise in Python, Kotlin, PHP, and modern web frameworks, I architect solutions that solve real business problems.\\n\\nMy approach blends rigorous engineering with intuitive design, ensuring every product is not only robust but also a joy to use.',
       imageUrl: 'https://yt3.googleusercontent.com/fIJ3r6a8JcUGXA7uEIvGopioT1m5VqF_srMy8_xgTAhkeHH4h7qw6yfjHqXfvNf7vsOSeVCy97E=s900-c-k-c0x00ffffff-no-rj',
       badgeLabel: 'Based in',
       badgeValue: 'Bihar, India',
@@ -116,8 +118,8 @@ const defaultData = [
     sectionId: 'contact', 
     title: 'Contact Form Texts', 
     content: JSON.stringify({
-      heading: "Have an idea? <br class=\"hidden md:block\" />\n<span class=\"text-signal-coral\">Let's talk.</span>",
-      subheading: "Fill out the form below to help me understand your project requirements, and I'll get back to you shortly."
+      heading: 'Have an idea? <br class="hidden md:block" />\\n<span class="text-signal-coral">Let\\'s talk.</span>',
+      subheading: 'Fill out the form below to help me understand your project requirements, and I\\'ll get back to you shortly.'
     })
   }
 ];
@@ -498,3 +500,7 @@ if (Astro.request.method === 'POST') {
     ))}
   </div>
 </AdminLayout>
+"""
+
+with open('scratch/sections_new.astro', 'w', encoding='utf-8') as f:
+    f.write(astro_content)
