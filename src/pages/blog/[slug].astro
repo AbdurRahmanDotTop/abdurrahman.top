@@ -8,13 +8,11 @@ import { blogPosts } from '../../db/schema';
 
 const { slug } = Astro.params;
 
-const locals = Astro.locals as any;
-const env = locals.runtime?.env;
-
 if (!slug) {
   return Astro.redirect('/404');
 }
 
+import { env } from "cloudflare:workers";
 const db = getDb(env.DB);
 const [post] = await db.select()
   .from(blogPosts)
