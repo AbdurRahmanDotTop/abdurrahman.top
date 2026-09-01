@@ -22,7 +22,9 @@ let heroData = {
   videoEmbed: "",
   badge: "Available for new opportunities",
   primaryButtonText: "Explore My Work",
-  primaryButtonLink: "#about"
+  primaryButtonLink: "#about",
+  secondaryButtonText: "Download CV",
+  secondaryButtonLink: cvUrl
 };
 
 if (heroSectionRows.length > 0 && heroSectionRows[0].isActive !== false) {
@@ -35,6 +37,8 @@ if (heroSectionRows.length > 0 && heroSectionRows[0].isActive !== false) {
     if (parsed.badge) heroData.badge = parsed.badge;
     if (parsed.primaryButtonText) heroData.primaryButtonText = parsed.primaryButtonText;
     if (parsed.primaryButtonLink) heroData.primaryButtonLink = parsed.primaryButtonLink;
+    if (parsed.secondaryButtonText !== undefined) heroData.secondaryButtonText = parsed.secondaryButtonText;
+    if (parsed.secondaryButtonLink !== undefined) heroData.secondaryButtonLink = parsed.secondaryButtonLink;
   } catch(e) {}
 }
 ---
@@ -71,9 +75,9 @@ if (heroSectionRows.length > 0 && heroSectionRows[0].isActive !== false) {
             </a>
           )}
           
-          {cvUrl && (
-            <a href={cvUrl} target="_blank" rel="noopener noreferrer" class="px-5 md:px-7 py-3 md:py-3.5 rounded-full bg-white text-tf-graphite border border-gray-200 font-bold tracking-wide hover:border-signal-coral hover:text-signal-coral transition-all shadow-sm hover:shadow-lg hover:shadow-signal-coral/10 hover:-translate-y-1 flex items-center gap-2 md:gap-3 text-sm md:text-base">
-              Download CV
+          {heroData.secondaryButtonLink && (
+            <a href={heroData.secondaryButtonLink} target="_blank" rel="noopener noreferrer" class="px-5 md:px-7 py-3 md:py-3.5 rounded-full bg-white text-tf-graphite border border-gray-200 font-bold tracking-wide hover:border-signal-coral hover:text-signal-coral transition-all shadow-sm hover:shadow-lg hover:shadow-signal-coral/10 hover:-translate-y-1 flex items-center gap-2 md:gap-3 text-sm md:text-base">
+              {heroData.secondaryButtonText || 'Download CV'}
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
             </a>
           )}
