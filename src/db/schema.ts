@@ -60,3 +60,13 @@ export const inquiries = sqliteTable("inquiries", {
   status: text("status").default("unread"),
   createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
 });
+
+export const socialLinks = sqliteTable("social_links", {
+  id: text("id").primaryKey(),
+  platform: text("platform").notNull(), // e.g., 'LinkedIn', 'Twitter', 'GitHub', 'Instagram', 'Facebook'
+  url: text("url").notNull(),
+  icon: text("icon"), // optional svg/icon name
+  order: integer("order").default(0),
+  isActive: integer("is_active", { mode: "boolean" }).default(true),
+  showInHero: integer("show_in_hero", { mode: "boolean" }).default(true),
+});

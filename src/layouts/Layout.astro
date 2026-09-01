@@ -1,6 +1,8 @@
 ---
 import '../styles/global.css';
 import Cursor from '../components/Cursor.astro';
+import BackToTop from '../components/BackToTop.astro';
+import TawkWidget from '../components/TawkWidget.astro';
 
 export interface Props {
   title: string;
@@ -110,5 +112,8 @@ const {
         <p class="flex items-center gap-1">Designed with <span class="text-signal-coral">&hearts;</span></p>
       </div>
     </footer>
+
+    <BackToTop />
+    <TawkWidget />
   </body>
 </html>

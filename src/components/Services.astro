@@ -3,46 +3,46 @@ const services = [
   {
     title: "AI Solutions & Automation",
     description: "Integrate powerful Generative AI models into your business processes. From smart chatbots to automated content pipelines, I build AI-driven features that save time and cut costs.",
-    icon: `<svg class="w-6 h-6 text-tf-graphite group-hover:text-signal-coral transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>`,
+    icon: `<svg class="w-5 h-5 md:w-6 md:h-6 text-tf-graphite group-hover:text-signal-coral transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>`,
     colSpan: "md:col-span-8",
     accent: "bg-signal-coral/5"
   },
   {
     title: "Web & Mobile Development",
     description: "End-to-end development for highly scalable platforms and native Android apps focusing on robust architecture.",
-    icon: `<svg class="w-6 h-6 text-tf-graphite group-hover:text-signal-coral transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>`,
+    icon: `<svg class="w-5 h-5 md:w-6 md:h-6 text-tf-graphite group-hover:text-signal-coral transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>`,
     colSpan: "md:col-span-4",
     accent: "bg-tf-graphite/5"
   },
   {
     title: "Digital Strategy & SEO",
     description: "Data-driven SEO optimization and digital marketing strategies to help your product reach the right audience, generate leads, and boost organic conversions globally.",
-    icon: `<svg class="w-6 h-6 text-tf-graphite group-hover:text-signal-coral transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>`,
+    icon: `<svg class="w-5 h-5 md:w-6 md:h-6 text-tf-graphite group-hover:text-signal-coral transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>`,
     colSpan: "md:col-span-12",
-    accent: "bg-cloud-surface"
+    accent: "bg-white"
   }
 ];
 ---
-<section id="services" class="py-32 bg-cloud-surface relative overflow-hidden">
-  <div class="max-w-7xl mx-auto px-6">
-    <div class="mb-16 md:mb-24 flex flex-col md:flex-row md:items-end justify-between gap-8">
-      <div class="max-w-2xl">
-        <h2 class="text-4xl md:text-5xl font-bold text-tf-graphite mb-6 tracking-tight">Specialized Services.</h2>
-        <p class="text-gray-500 text-lg md:text-xl font-medium leading-relaxed">Delivering cutting-edge solutions across engineering, AI, and digital growth with an uncompromising focus on quality.</p>
+<section id="services" class="py-20 lg:py-32 bg-cloud-surface relative overflow-hidden">
+  <div class="max-w-7xl mx-auto px-4 md:px-6">
+    <div class="mb-12 md:mb-24 flex flex-col md:flex-row md:items-end justify-between gap-6 md:gap-8 text-center md:text-left">
+      <div class="max-w-2xl mx-auto md:mx-0">
+        <h2 class="text-4xl md:text-5xl font-bold text-tf-graphite mb-4 md:mb-6 tracking-tight">Specialized Services.</h2>
+        <p class="text-gray-500 text-base md:text-xl font-medium leading-relaxed">Delivering cutting-edge solutions across engineering, AI, and digital growth with an uncompromising focus on quality.</p>
       </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6">
       {services.map((service, index) => (
-        <div class={`bg-white rounded-[2rem] p-8 md:p-12 border border-gray-100 hover:border-gray-200 shadow-sm hover:shadow-xl transition-all duration-500 group relative overflow-hidden ${service.colSpan}`}>
+        <div class={`bg-white rounded-[1.5rem] md:rounded-[2rem] p-6 md:p-12 border border-gray-100 hover:border-gray-200 shadow-[0_4px_20px_rgb(0,0,0,0.02)] hover:shadow-xl transition-all duration-500 group relative overflow-hidden ${service.colSpan}`}>
           <div class={`absolute inset-0 ${service.accent} opacity-0 group-hover:opacity-100 transition-opacity duration-700`}></div>
           <div class="relative z-10 h-full flex flex-col justify-between">
-            <div class="w-14 h-14 rounded-full border border-gray-100 flex items-center justify-center mb-12 bg-white shadow-sm">
+            <div class="w-12 h-12 md:w-14 md:h-14 rounded-full border border-gray-100 flex items-center justify-center mb-8 md:mb-12 bg-white shadow-sm mx-auto md:mx-0">
               <span set:html={service.icon}></span>
             </div>
-            <div>
-              <h3 class="text-2xl font-bold text-tf-graphite mb-4 tracking-tight group-hover:text-signal-coral transition-colors">{service.title}</h3>
-              <p class="text-gray-500 leading-relaxed font-medium text-base md:text-lg">{service.description}</p>
+            <div class="text-center md:text-left">
+              <h3 class="text-xl md:text-2xl font-bold text-tf-graphite mb-3 md:mb-4 tracking-tight group-hover:text-signal-coral transition-colors">{service.title}</h3>
+              <p class="text-gray-500 leading-relaxed font-medium text-sm md:text-lg">{service.description}</p>
             </div>
           </div>
         </div>
