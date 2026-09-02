@@ -38,7 +38,7 @@ const activeStats = (statsData.items || []).filter((s: any) => s.isActive !== fa
 
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
       {activeStats.map((stat) => (
-        <div class="flex flex-col items-center justify-center text-center p-6 md:p-8 rounded-[2rem] bg-gray-50/50 hover:bg-white border border-transparent hover:border-gray-100 shadow-none hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-500 group">
+        <div class="flex flex-col items-center justify-center text-center p-6 md:p-8 rounded-[2rem] bg-white border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:border-signal-coral/20 hover:shadow-[0_8px_30px_rgba(247,80,35,0.15)] transition-all duration-500 group">
           {stat.icon && (
             <div class="w-12 h-12 md:w-16 md:h-16 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center mb-5 group-hover:scale-110 group-hover:shadow-md transition-all duration-300">
               <span class="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center text-tf-graphite group-hover:text-signal-coral transition-colors" set:html={stat.icon}></span>
