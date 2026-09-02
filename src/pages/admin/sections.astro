@@ -113,6 +113,52 @@ const defaultData = [
       ]
     })
   },
+  {
+    id: crypto.randomUUID(),
+    sectionId: 'portfolio',
+    title: 'My Works / Portfolio',
+    content: JSON.stringify({
+      heading: 'My Works / <span class="text-signal-coral">Portfolio.</span>',
+      subheading: 'A curated collection of scalable digital products, AI solutions, and engineering projects I have built.',
+      items: [
+        {
+          title: 'TF Plans - Smart Notes & Tasks',
+          description: 'Smart notes, tasks, AI assistant, and reminders to organize your life.',
+          featuredImage: 'https://z-cdn-media.chatglm.cn/files/964726f5-5d6c-4a88-a6bb-5d9f81c890a5.png?auth_key=1885328558-ced8c481b35f4f5c9d86d4591b15ee7b-0-2bf7d0498048213caa51ebcf1300fd80',
+          skills: 'Kotlin, Android, AI, SQLite',
+          liveUrl: 'https://apps.techilyfly.com/apps/TF-Plans'
+        },
+        {
+          title: 'Techily Fly - Main Platform',
+          description: 'We handle everything from strategy to execution, AI to analytics, like your in-house Software team would.',
+          featuredImage: 'https://techilyfly.com/images/logo.png',
+          skills: 'React, Node.js, AI, Full-Stack',
+          liveUrl: 'https://techilyfly.com'
+        },
+        {
+          title: 'Ethsltd - Crypto Trading',
+          description: 'Crypto Trading and P2P Trading Web App. High security and real-time ledger.',
+          featuredImage: 'https://techilyfly.com/images/logo.png',
+          skills: 'Crypto, Web3, Secure Trading',
+          liveUrl: 'https://apps.techilyfly.com/web-apps/ethsltd'
+        },
+        {
+          title: 'Techily Fly CSC',
+          description: 'Aapki Sarkari Seva, Ab Aasaan Aur Tez. Government, tax, business, and educational services.',
+          featuredImage: 'https://techilyfly.com/images/logo.png',
+          skills: 'E-Governance, Digital Services',
+          liveUrl: 'https://csc.techilyfly.com'
+        },
+        {
+          title: 'TF Aadhaar Cropper',
+          description: 'Crop & Print your e-Aadhaar in seconds automatically formatted for 4x6 or A4 size printing.',
+          featuredImage: 'https://techilyfly.com/images/logo.png',
+          skills: 'PDF processing, Automation',
+          liveUrl: 'https://apps.techilyfly.com/tools/TF Aadhaar Cropper'
+        }
+      ]
+    })
+  },
   { 
     id: crypto.randomUUID(), 
     sectionId: 'contact', 
@@ -494,6 +540,59 @@ if (Astro.request.method === 'POST') {
                            </div>
                         </template>
                         <div x-show="!parsed.credentials || parsed.credentials.length === 0" class="text-gray-400 text-sm italic">No credentials yet.</div>
+                     </div>
+                   </div>
+               </div>
+            )}
+
+            {/* PORTFOLIO UI */}
+            {sec.sectionId === 'portfolio' && (
+               <div class="space-y-6">
+                   <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                     <div class="md:col-span-2">
+                       <label class="block text-sm font-bold text-gray-700 mb-2">Heading</label>
+                       <input type="text" x-model="parsed.heading" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-signal-coral focus:border-transparent outline-none transition-all font-medium" />
+                     </div>
+                     <div class="md:col-span-2">
+                       <label class="block text-sm font-bold text-gray-700 mb-2">Subheading</label>
+                       <textarea x-model="parsed.subheading" rows="2" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-signal-coral focus:border-transparent outline-none transition-all font-medium leading-relaxed"></textarea>
+                     </div>
+                   </div>
+                   
+                   <div class="bg-gray-50 border border-gray-200 rounded-xl p-4">
+                     <h5 class="font-bold text-tf-graphite mb-4 flex justify-between items-center">
+                        Project Cards
+                        <button type="button" @click="parsed.items = parsed.items || []; parsed.items.push({title:'', description:'', featuredImage:'', skills:'', liveUrl:''})" class="text-sm px-3 py-1 bg-white border border-gray-300 rounded hover:bg-gray-100">+ Add Project</button>
+                     </h5>
+                     <div class="space-y-4">
+                        <template x-for="(item, index) in parsed.items" :key="index">
+                           <div class="bg-white p-4 border border-gray-200 rounded-lg relative pr-10">
+                              <button type="button" @click="parsed.items.splice(index, 1)" class="absolute top-4 right-4 text-red-500 hover:text-red-700 font-bold text-xl">&times;</button>
+                              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                  <label class="block text-xs font-bold text-gray-500 mb-1">Project Title</label>
+                                  <input type="text" x-model="item.title" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded text-sm focus:ring-1 focus:ring-signal-coral outline-none" />
+                                </div>
+                                <div>
+                                  <label class="block text-xs font-bold text-gray-500 mb-1">Live Project URL</label>
+                                  <input type="text" x-model="item.liveUrl" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded text-sm focus:ring-1 focus:ring-signal-coral outline-none" />
+                                </div>
+                                <div class="md:col-span-2">
+                                  <label class="block text-xs font-bold text-gray-500 mb-1">Featured Image URL</label>
+                                  <input type="text" x-model="item.featuredImage" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded text-sm focus:ring-1 focus:ring-signal-coral outline-none" />
+                                </div>
+                                <div class="md:col-span-2">
+                                  <label class="block text-xs font-bold text-gray-500 mb-1">Description</label>
+                                  <textarea x-model="item.description" rows="2" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded text-sm focus:ring-1 focus:ring-signal-coral outline-none"></textarea>
+                                </div>
+                                <div class="md:col-span-2">
+                                  <label class="block text-xs font-bold text-gray-500 mb-1">Skills / Technologies (Comma separated)</label>
+                                  <input type="text" x-model="item.skills" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded text-sm focus:ring-1 focus:ring-signal-coral outline-none" />
+                                </div>
+                              </div>
+                           </div>
+                        </template>
+                        <div x-show="!parsed.items || parsed.items.length === 0" class="text-gray-400 text-sm italic">No projects yet.</div>
                      </div>
                    </div>
                </div>
