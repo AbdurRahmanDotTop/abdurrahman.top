@@ -1,0 +1,111 @@
+---
+import { eq } from 'drizzle-orm';
+import { getDb } from '../db';
+import { sections } from '../db/schema';
+import { env } from "cloudflare:workers";
+
+const db = getDb(env.DB);
+const dbSection = await db.select().from(sections).where(eq(sections.sectionId, 'stats')).limit(1);
+
+let statsData = {
+  heading: 'Impact by the <span class="text-signal-coral">Numbers.</span>',
+  subheading: 'A quick look at the milestones and achievements we have reached.',
+  items: [] as any[]
+};
+let isActive = true;
+
+if (dbSection.length > 0) {
+  isActive = dbSection[0].isActive ?? true;
+  if (dbSection[0].content) {
+    try {
+      statsData = JSON.parse(dbSection[0].content);
+    } catch(e) {}
+  }
+}
+
+const activeStats = (statsData.items || []).filter((s: any) => s.isActive !== false);
+---
+
+{isActive && activeStats.length > 0 && (
+<section id="stats" class="py-16 md:py-24 bg-white relative overflow-hidden border-b border-gray-100/50">
+  <div class="max-w-7xl mx-auto px-4 md:px-6">
+    {(statsData.heading || statsData.subheading) && (
+      <div class="text-center max-w-3xl mx-auto mb-12 md:mb-16">
+        {statsData.heading && <h2 class="text-3xl md:text-5xl font-bold text-tf-graphite mb-4 tracking-tight" set:html={statsData.heading}></h2>}
+        {statsData.subheading && <p class="text-gray-500 text-base md:text-xl font-medium leading-relaxed" set:html={statsData.subheading}></p>}
+      </div>
+    )}
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
+      {activeStats.map((stat) => (
+        <div class="flex flex-col items-center justify-center text-center p-6 md:p-8 rounded-[2rem] bg-gray-50/50 hover:bg-white border border-transparent hover:border-gray-100 shadow-none hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-500 group">
+          {stat.icon && (
+            <div class="w-12 h-12 md:w-16 md:h-16 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center mb-5 group-hover:scale-110 group-hover:shadow-md transition-all duration-300">
+              <span class="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center text-tf-graphite group-hover:text-signal-coral transition-colors" set:html={stat.icon}></span>
+            </div>
+          )}
+          <h3 class="stat-value text-4xl md:text-5xl font-extrabold text-tf-graphite mb-2 tracking-tight" data-target={stat.value}>
+            0
+          </h3>
+          <p class="text-sm md:text-lg font-bold text-gray-800 mb-1">{stat.label}</p>
+          {stat.description && <p class="text-xs md:text-sm text-gray-500 font-medium">{stat.description}</p>}
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  function setupCounters() {
+    const counters = document.querySelectorAll('.stat-value');
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const el = entry.target as HTMLElement;
+          if (el.classList.contains('counted')) return;
+          
+          const targetText = el.getAttribute('data-target') || '';
+          
+          const match = targetText.match(/^([^\d]*)(\d+(?:\.\d+)?)(.*)$/);
+          
+          if (match) {
+            const prefix = match[1];
+            const targetNum = parseFloat(match[2]);
+            const suffix = match[3];
+            
+            const duration = 2000;
+            const fps = 60;
+            const frames = duration / (1000 / fps);
+            const inc = targetNum / frames;
+            
+            let currentNum = 0;
+            el.classList.add('counted');
+            
+            const updateCounter = () => {
+              currentNum += inc;
+              if (currentNum < targetNum) {
+                const displayNum = Number.isInteger(targetNum) ? Math.ceil(currentNum) : currentNum.toFixed(1);
+                el.innerText = `${prefix}${displayNum}${suffix}`;
+                requestAnimationFrame(updateCounter);
+              } else {
+                el.innerText = targetText;
+              }
+            };
+            
+            updateCounter();
+          } else {
+             el.innerText = targetText;
+             el.classList.add('counted');
+          }
+        }
+      });
+    }, { threshold: 0.1 });
+
+    counters.forEach(counter => observer.observe(counter));
+  }
+  
+  document.addEventListener('DOMContentLoaded', setupCounters);
+  document.addEventListener('astro:page-load', setupCounters);
+</script>
+)}
